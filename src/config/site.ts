@@ -1,10 +1,10 @@
 /**
- * Configuración que podés cambiar sin tocar el resto del código.
+ * Configuración que puedes cambiar sin tocar el resto del código.
  *
  * Formularios externos (Tally o Google Forms):
  * - En Google Forms: "Obtener vínculo previamente completado" te da los
- *   nombres de campo `entry.123456`. Ponelos en `fields`.
- * - En Tally: usá "hidden fields" y poné sus nombres en `fields`.
+ *   nombres de campo `entry.123456`. Ponlos en `fields`.
+ * - En Tally: usa "hidden fields" y pon sus nombres en `fields`.
  */
 export const site = {
   nombre: 'Desde la base',

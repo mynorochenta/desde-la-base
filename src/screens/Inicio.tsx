@@ -66,10 +66,10 @@ export function Inicio() {
       <Boceto />
 
       <p className="inicio-texto">
-        Si te perdés en álgebra o cálculo, casi siempre es por una base: los signos, las fracciones, los exponentes.
-        Respondé unas 12 preguntas y te decimos cuál te falta.
+        Si te pierdes en álgebra o cálculo, casi siempre es por una base: los signos, las fracciones, los exponentes.
+        Responde unas 12 preguntas y te decimos cuál te falta.
       </p>
-      <p className="inicio-texto">Después aprendés solo eso, practicando, sin páginas de teoría.</p>
+      <p className="inicio-texto">Después aprendes solo eso, practicando, sin páginas de teoría.</p>
 
       <div className="inicio-acciones">
         <a className="boton" href={href(rutas.diagnostico)}>
