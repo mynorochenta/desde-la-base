@@ -1,0 +1,101 @@
+.recta-figura {
+  margin: 0;
+  width: 100%;
+}
+
+/* Mafs con los colores del cuaderno: fondo transparente para que se vea la cuadrícula. */
+.recta-figura .MafsView {
+  --mafs-bg: transparent;
+  --mafs-fg: var(--texto);
+  font-family: var(--mano);
+}
+
+.recta-figura .MafsView:focus-visible {
+  outline: none;
+}
+
+.recta-eje,
+.recta-tic,
+.recta-cero {
+  stroke: var(--texto);
+  stroke-linecap: round;
+}
+
+.recta-eje {
+  stroke-width: 2;
+}
+
+.recta-tic {
+  stroke-width: 1.5;
+}
+
+.recta-cero {
+  stroke-width: 2.5;
+}
+
+.MafsView .recta-numero {
+  fill: var(--texto-suave);
+  font-family: var(--mano);
+  font-size: 14px;
+  text-anchor: middle;
+}
+
+.MafsView .recta-destacado {
+  fill: var(--tinta);
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.MafsView .recta-salto path,
+.MafsView .recta-fantasma path {
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.MafsView .recta-salto path {
+  stroke: var(--tinta);
+}
+
+/* El menos voltea la flecha: se marca con la pluma roja. */
+.MafsView .recta-volteado path {
+  stroke: var(--margen);
+}
+
+.MafsView .recta-fantasma path {
+  stroke: var(--lapiz);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 4;
+  opacity: 0.7;
+}
+
+.MafsView .recta-valor {
+  fill: var(--tinta);
+  font-family: var(--mano);
+  font-weight: 700;
+  font-size: 15px;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: var(--papel);
+  stroke-width: 4px;
+}
+
+.MafsView .recta-volteado .recta-valor {
+  fill: var(--rojo);
+}
+
+.MafsView .recta-llegada ellipse {
+  fill: none;
+  stroke: var(--margen);
+  stroke-width: 2;
+}
+
+.recta-inicio {
+  fill: var(--tinta);
+}
+
+/* Punto que se arrastra: más grande para el dedo. */
+.recta-figura .mafs-movable-point {
+  --movable-point-ring-size: 12px;
+}

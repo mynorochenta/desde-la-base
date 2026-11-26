@@ -1,0 +1,420 @@
+.leccion {
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--cuadro);
+}
+
+.leccion-barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 2.5rem;
+}
+
+.leccion-salir {
+  font-size: var(--t-1);
+  color: var(--texto-suave);
+}
+
+.leccion-nombre {
+  font-family: var(--mano);
+  font-size: var(--t1);
+  color: var(--tinta);
+}
+
+/* Pasos: círculos numerados unidos por una línea, como un índice a mano. */
+.pasos {
+  margin: 0.5rem 0 calc(var(--cuadro) * 1.5);
+}
+
+.pasos ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  max-width: 18rem;
+}
+
+.pasos ol::before {
+  content: '';
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  top: 50%;
+  border-top: 2px dashed var(--lapiz);
+}
+
+.pasos-punto {
+  position: relative;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  border: 2px solid var(--tinta);
+  background: var(--papel);
+  font-family: var(--mano);
+  font-weight: 700;
+  font-size: var(--t0);
+  color: var(--tinta);
+  cursor: pointer;
+}
+
+.pasos-hecho {
+  background: var(--tinta);
+  color: #fff;
+}
+
+.pasos-actual {
+  background: var(--resaltador);
+  color: var(--texto);
+  box-shadow: 2px 2px 0 var(--tinta);
+}
+
+.pasos-futuro {
+  border-style: dashed;
+  border-color: var(--lapiz);
+  color: var(--lapiz);
+  cursor: default;
+}
+
+.pasos-texto {
+  margin-top: 0.5rem;
+  font-size: var(--t-1);
+  color: var(--texto-suave);
+}
+
+.paso-titulo {
+  font-size: var(--t4);
+  margin-bottom: 0.75rem;
+  max-width: 16ch;
+}
+
+.paso-subtitulo {
+  font-size: var(--t2);
+  margin: calc(var(--cuadro) * 1.5) 0 0.5rem;
+}
+
+.paso-texto {
+  font-size: var(--t1);
+  max-width: 34ch;
+  margin-bottom: var(--cuadro);
+}
+
+.paso-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin-top: calc(var(--cuadro) * 1.5);
+}
+
+/* Explorador: la fórmula, la recta y los controles. */
+.explorador {
+  margin: 0.5rem 0 var(--cuadro);
+}
+
+.explorador-formula {
+  min-height: 3.5rem;
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+}
+
+.explorador-controles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--cuadro) calc(var(--cuadro) * 1.5);
+  margin-top: 0.25rem;
+}
+
+.explorador-regla {
+  min-height: 4.75rem;
+  margin-top: var(--cuadro);
+  font-family: var(--mano);
+  font-size: var(--t1);
+  line-height: 1.3;
+  color: var(--tinta);
+  max-width: 30ch;
+}
+
+.explorador-equivale {
+  margin-top: 0.35rem;
+  color: var(--texto);
+}
+
+.segmento {
+  display: inline-flex;
+  border: 2px solid var(--tinta);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.segmento button {
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: none;
+  background: #fff;
+  font-weight: 700;
+  color: var(--tinta);
+  cursor: pointer;
+}
+
+.segmento button + button {
+  border-left: 2px solid var(--tinta);
+}
+
+.segmento button[aria-pressed='true'] {
+  background: var(--resaltador);
+  color: var(--texto);
+}
+
+.contador-etiqueta {
+  display: block;
+  font-size: var(--t-1);
+  color: var(--texto-suave);
+  margin-bottom: 0.2rem;
+}
+
+.contador-fila {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.contador-boton {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  border: 2px solid var(--tinta);
+  background: #fff;
+  font-size: var(--t2);
+  line-height: 1;
+  color: var(--tinta);
+  cursor: pointer;
+}
+
+.contador-boton:disabled {
+  border-color: var(--cuadricula);
+  color: var(--lapiz);
+  cursor: default;
+}
+
+.contador-valor {
+  min-width: 2.5ch;
+  text-align: center;
+  font-family: var(--mano);
+  font-weight: 700;
+  font-size: var(--t2);
+  color: var(--texto);
+}
+
+/* Casos probados: casillas de cuaderno. */
+.casos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.caso {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--texto-suave);
+}
+
+.caso-casilla {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 1.5px solid var(--lapiz);
+  display: grid;
+  place-items: center;
+  font-family: var(--mano);
+  font-weight: 700;
+  font-size: 1.15rem;
+  line-height: 1;
+  color: var(--tinta);
+}
+
+.caso-hecho {
+  color: var(--texto);
+}
+
+.caso-hecho .caso-casilla {
+  border-color: var(--tinta);
+}
+
+/* Tabla de signos: la fila del caso actual se pinta con resaltador. */
+.tabla-signos {
+  border-collapse: collapse;
+  margin-bottom: var(--cuadro);
+}
+
+.tabla-signos th,
+.tabla-signos td {
+  text-align: left;
+  font-weight: 400;
+  padding: 0.3rem 0.6rem 0.3rem 0;
+  border-bottom: 1px solid var(--cuadricula);
+}
+
+.tabla-signos th {
+  padding-left: 0.3rem;
+}
+
+.tabla-signos tr {
+  transition: background-color 200ms ease;
+}
+
+.tabla-activa {
+  background: rgb(245 227 74 / 0.75);
+}
+
+/* Ejemplo guiado */
+.guiado {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.guiado-paso {
+  padding: var(--cuadro) 0;
+  border-bottom: 1.5px dashed var(--cuadricula);
+}
+
+.guiado-formula {
+  min-height: 3.5rem;
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+}
+
+.guiado-explicacion {
+  font-size: var(--t1);
+  max-width: 32ch;
+  margin: 0.25rem 0 0.75rem;
+}
+
+.guiado-pregunta {
+  border: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.guiado-pregunta legend {
+  padding: 0;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.guiado-opciones {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.opcion {
+  min-height: 2.75rem;
+  padding: 0.5rem 0.9rem;
+  border: 2px solid var(--tinta);
+  border-radius: 0.4rem 0.6rem 0.5rem 0.7rem;
+  background: #fff;
+  text-align: left;
+  color: var(--texto);
+  cursor: pointer;
+}
+
+.opcion:disabled {
+  cursor: default;
+}
+
+.opcion:disabled:not(.opcion-bien):not(.opcion-mal) {
+  border-color: var(--cuadricula);
+  color: var(--texto-suave);
+}
+
+.opcion-bien {
+  background: var(--resaltador);
+  box-shadow: 2px 2px 0 var(--tinta);
+}
+
+.opcion-mal {
+  border-color: var(--margen);
+  color: var(--texto-suave);
+  text-decoration: line-through;
+  text-decoration-color: var(--margen);
+  text-decoration-thickness: 2px;
+}
+
+.guiado-retro {
+  margin-top: 0.6rem;
+  font-family: var(--mano);
+  font-size: var(--t1);
+  line-height: 1.3;
+  max-width: 30ch;
+}
+
+.guiado-bien {
+  color: var(--tinta);
+}
+
+.guiado-mal {
+  color: var(--rojo);
+}
+
+.guiado-cierre {
+  margin-top: var(--cuadro);
+}
+
+.guiado-cierre-formula .formula {
+  background: var(--resaltador);
+  padding: 0.1rem 0.4rem;
+}
+
+/* Práctica y prueba */
+.ejercicios-cuenta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--mano);
+  font-size: var(--t1);
+  color: var(--tinta);
+  min-height: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.ver-recta {
+  margin: 0.25rem 0 0.5rem;
+}
+
+/* Final */
+.fin-marca .marca {
+  width: 64px;
+  height: 64px;
+}
+
+.fin-desbloqueo {
+  margin-top: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--tinta);
+  border-radius: 0.4rem 0.7rem 0.5rem 0.8rem;
+  background: #fff;
+  max-width: 30rem;
+}
+
+.fin-desbloqueo h2 {
+  font-size: var(--t2);
+  margin-bottom: 0.4rem;
+}
+
+.fin-desbloqueo ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.fin-desbloqueo li + li {
+  margin-top: 0.35rem;
+}

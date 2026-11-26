@@ -15,7 +15,9 @@ export function Resultado() {
   const progreso = useProgreso()
   const diag = progreso.diagnostico
 
-  if (!diag) {
+  const algoDominado = Object.values(progreso.conceptos).some((c) => c.dominado)
+
+  if (!diag && !algoDominado) {
     return (
       <main className="hoja resultado">
         <h1 className="resultado-titulo">Tu mapa</h1>
@@ -28,7 +30,7 @@ export function Resultado() {
   }
 
   // Lo aprendido en lecciones cuenta aunque el diagnóstico dijera otra cosa.
-  const v = { ...diag.veredictos }
+  const v = { ...diag?.veredictos }
   for (const [id, c] of Object.entries(progreso.conceptos)) if (c.dominado) v[id] = 'dominado'
 
   const estados = estadosMapa(v)
@@ -44,7 +46,9 @@ export function Resultado() {
       </a>
       <h1 className="resultado-titulo">Tu mapa</h1>
       <p className="resultado-texto">
-        {!inicio
+        {!diag
+          ? 'Esto es lo que aprendiste en las lecciones. Haz el diagnóstico para saber qué más dominas.'
+          : !inicio
           ? 'Dominas todas las bases de esta parte. Muy bien.'
           : dominados === 0
             ? `Vamos a empezar desde el principio, con ${conceptos[inicio].nombre.toLowerCase()}. Así nada te queda flojo.`
@@ -94,7 +98,7 @@ export function Resultado() {
       )}
 
       <a className="boton-texto resultado-repetir" href={href(rutas.diagnostico)}>
-        Repetir el diagnóstico
+        {diag ? 'Repetir el diagnóstico' : 'Hacer el diagnóstico completo'}
       </a>
     </main>
   )
