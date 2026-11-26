@@ -1,0 +1,126 @@
+.resp-enunciado {
+  font-size: var(--t2);
+  font-family: var(--mano);
+  margin-bottom: var(--cuadro);
+  max-width: 24ch;
+}
+
+.resp-formula {
+  min-height: 4.5rem;
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  padding: 0.25rem 0;
+  color: var(--texto);
+}
+
+.resp-linea {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin: 0.5rem 0 0.25rem;
+}
+
+.resp-igual {
+  font-size: var(--t3);
+  color: var(--texto-suave);
+}
+
+/* La respuesta se escribe a mano sobre un renglón. */
+.resp-campo {
+  flex: 1;
+  min-width: 0;
+  max-width: 14rem;
+  border: none;
+  border-bottom: 2px solid var(--tinta);
+  border-radius: 0;
+  background: transparent;
+  font-family: var(--mano);
+  font-size: var(--t3);
+  color: var(--tinta);
+  padding: 0.1rem 0.25rem;
+  caret-color: var(--margen);
+}
+
+.resp-campo::placeholder {
+  font-size: var(--t1);
+  color: var(--lapiz);
+}
+
+.resp-campo:focus-visible {
+  box-shadow: none;
+  border-bottom-color: var(--margen);
+  background: rgb(245 227 74 / 0.25);
+}
+
+.resp-aviso {
+  color: var(--rojo);
+  font-size: var(--t0);
+  margin-bottom: 0.25rem;
+}
+
+.resp .teclado {
+  margin-top: var(--cuadro);
+}
+
+.resp-acciones {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: var(--cuadro);
+}
+
+.resp-retro {
+  margin-top: var(--cuadro);
+  padding: 0.75rem 0;
+}
+
+.resp-retro-fila {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+.resp-retro-fila p {
+  font-family: var(--mano);
+  font-size: var(--t1);
+  line-height: 1.3;
+  padding-top: 0.35rem;
+}
+
+.resp-retro-bien .resp-retro-fila p {
+  color: var(--tinta);
+}
+
+.resp-retro-mal .resp-retro-fila p {
+  color: var(--rojo);
+}
+
+.resp-solucion {
+  margin: 0.75rem 0 var(--cuadro);
+  font-size: var(--t1);
+}
+
+.resp-solucion .formula {
+  background: var(--resaltador);
+  padding: 0 0.3rem;
+}
+
+.resp-retro .boton {
+  margin-top: 0.5rem;
+}
+
+.marca {
+  flex-shrink: 0;
+  fill: none;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.marca-bien {
+  stroke: var(--tinta);
+}
+
+.marca-mal {
+  stroke: var(--margen);
+}
