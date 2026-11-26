@@ -199,3 +199,8 @@ a {
   font-size: var(--t-1);
   color: var(--texto-suave);
 }
+
+/* Mantiene junta una fórmula con el signo de puntuación que la sigue. */
+.sin-salto {
+  white-space: nowrap;
+}

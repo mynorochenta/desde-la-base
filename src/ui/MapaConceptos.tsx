@@ -90,6 +90,8 @@ export function MapaConceptos({ estados, inicio }: { estados: Record<ConceptoId,
           <g key={id} className={`mapa-nodo mapa-${e}`} data-id={id}>
             <circle cx={x} cy={y} r={R} />
             {e === 'dominado' && <path className="mapa-check" d={`M${x - 6} ${y} L${x - 1.5} ${y + 5} L${x + 6.5} ${y - 5}`} />}
+            {/* Fondo de papel detrás del nombre, para que las líneas no lo crucen. */}
+            <rect className="mapa-fondo-texto" x={x - conceptos[id].corto.length * 3.9 - 4} y={y + R + 4} width={conceptos[id].corto.length * 7.8 + 8} height={18} rx={4} />
             <text x={x} y={y + R + 17}>
               {conceptos[id].corto}
             </text>

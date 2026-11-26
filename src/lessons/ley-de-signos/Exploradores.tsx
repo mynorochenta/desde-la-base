@@ -185,7 +185,9 @@ export function PasoProducto({ alSeguir }: { alSeguir: () => void }) {
       </table>
       <p className="paso-texto">
         Signos iguales dan positivo. Signos distintos dan negativo. Al dividir pasa lo mismo:{' '}
-        <Formula latex="(-12) \div (-3) = 4" />.
+        <span className="sin-salto">
+          <Formula latex="(-12) \div (-3) = 4" />.
+        </span>
       </p>
 
       <Casos casos={TABLA_SIGNOS.map((f) => ({ id: f.caso, texto: `${f.texto[0].toUpperCase()}${f.texto.slice(1)}` }))} probados={probados} />

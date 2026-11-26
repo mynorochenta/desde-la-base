@@ -23,6 +23,11 @@
   stroke-width: 2.5;
 }
 
+.mapa-fondo-texto {
+  fill: var(--papel);
+  opacity: 0.92;
+}
+
 .mapa-nodo text {
   font-family: var(--mano);
   font-size: 15px;
