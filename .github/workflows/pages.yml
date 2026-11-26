@@ -1,10 +1,10 @@
-# Publica el sitio en GitHub Pages cada vez que hay cambios en main.
+# Publica el sitio en GitHub Pages. Por ahora solo corre a mano
+# (Actions → Publicar en GitHub Pages → Run workflow).
+# Para publicar en cada push a main, agrega:  push: { branches: [main] }
 # En el repositorio: Settings → Pages → Source: "GitHub Actions".
 name: Publicar en GitHub Pages
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:

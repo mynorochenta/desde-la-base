@@ -130,7 +130,7 @@ Importa el repositorio en Vercel. [`vercel.json`](vercel.json) ya trae el comand
 
 1. Sube el repositorio a GitHub.
 2. En **Settings → Pages**, elige **Source: GitHub Actions**.
-3. Cada push a `main` corre [`.github/workflows/pages.yml`](.github/workflows/pages.yml): revisa el código, corre las pruebas y publica.
+3. En **Actions**, corre **Publicar en GitHub Pages** ([`pages.yml`](.github/workflows/pages.yml)): revisa el código, corre las pruebas y publica. Por ahora se corre a mano; para publicar en cada push a `main`, agrega ese disparador al workflow.
 
 Como el build usa rutas relativas, funciona igual en `usuario.github.io/repositorio/`.
 
