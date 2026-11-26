@@ -1,0 +1,135 @@
+@import '@fontsource/kalam/latin-400.css';
+@import '@fontsource/kalam/latin-700.css';
+@import '@fontsource/atkinson-hyperlegible/latin-400.css';
+@import '@fontsource/atkinson-hyperlegible/latin-700.css';
+@import './tokens.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  font-family: var(--letra);
+  font-size: var(--t0);
+  line-height: 1.5;
+  color: var(--texto);
+  background-color: var(--papel);
+  background-image:
+    linear-gradient(var(--cuadricula) 1px, transparent 1px),
+    linear-gradient(90deg, var(--cuadricula) 1px, transparent 1px);
+  background-size: var(--cuadro) var(--cuadro);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--mano);
+  font-weight: 700;
+  color: var(--tinta);
+  line-height: 1.1;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: var(--tinta);
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--anillo);
+  border-radius: 4px;
+}
+
+/* Hoja: la columna con la línea roja de margen, como en el cuaderno. */
+.hoja {
+  position: relative;
+  max-width: 36rem;
+  margin: 0 auto;
+  min-height: 100dvh;
+  padding: calc(var(--cuadro) * 2) var(--cuadro) calc(var(--cuadro) * 3) calc(var(--cuadro) * 3);
+}
+
+.hoja::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--cuadro) * 2);
+  width: 2px;
+  background: var(--margen);
+  opacity: 0.55;
+}
+
+/* Botones: el principal parece escrito con marcador sobre resaltador. */
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0.6rem 1.4rem;
+  border: 2px solid var(--tinta);
+  border-radius: 0.4rem 0.7rem 0.5rem 0.8rem;
+  background: var(--resaltador);
+  color: var(--texto);
+  font-family: var(--letra);
+  font-weight: 700;
+  font-size: var(--t1);
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--tinta);
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.boton:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--tinta);
+}
+
+.boton-texto {
+  background: none;
+  border: none;
+  padding: 0.4rem 0;
+  font-family: var(--letra);
+  font-size: var(--t0);
+  color: var(--tinta);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

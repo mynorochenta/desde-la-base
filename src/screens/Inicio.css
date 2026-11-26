@@ -1,0 +1,113 @@
+.inicio-pagina {
+  display: flex;
+  flex-direction: column;
+}
+
+.inicio-titulo {
+  font-size: var(--t4);
+  max-width: 11ch;
+  margin-bottom: var(--cuadro);
+}
+
+@media (min-width: 30rem) {
+  .inicio-titulo {
+    font-size: var(--t5);
+  }
+}
+
+.boceto {
+  width: 100%;
+  max-width: 24rem;
+  margin: 0 0 calc(var(--cuadro) * 1.5);
+  overflow: visible;
+}
+
+.boceto .recta,
+.boceto .marca line {
+  stroke: var(--texto);
+  stroke-width: 2;
+  stroke-linecap: round;
+  fill: none;
+}
+
+.boceto .marca text {
+  font-family: var(--letra);
+  font-size: 13px;
+  fill: var(--texto-suave);
+  text-anchor: middle;
+}
+
+.boceto .arco,
+.boceto .punta {
+  stroke: var(--tinta);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+.boceto .inicio {
+  fill: var(--papel);
+  stroke: var(--tinta);
+  stroke-width: 2.5;
+}
+
+.boceto .fin {
+  fill: var(--resaltador);
+  stroke: var(--tinta);
+  stroke-width: 2.5;
+}
+
+.boceto .etiqueta {
+  font-family: var(--mano);
+  font-size: 20px;
+  font-weight: 700;
+  fill: var(--tinta);
+  text-anchor: middle;
+}
+
+.boceto .ecuacion text {
+  font-family: var(--mano);
+  font-size: 22px;
+  fill: var(--texto);
+}
+
+.boceto .subrayado {
+  stroke: var(--margen);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  fill: none;
+}
+
+.inicio-texto {
+  font-size: var(--t1);
+  line-height: 1.45;
+  max-width: 32ch;
+  margin-bottom: var(--cuadro);
+}
+
+.inicio-acciones {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--cuadro);
+  margin: var(--cuadro) 0 calc(var(--cuadro) * 2);
+}
+
+.inicio-nota {
+  font-family: var(--mano);
+  font-size: var(--t1);
+  color: var(--texto-suave);
+  transform: rotate(-1.5deg);
+  transform-origin: left;
+}
+
+.inicio-pie {
+  margin-top: auto;
+  padding-top: calc(var(--cuadro) * 3);
+}
+
+.inicio-pie .boton-texto {
+  font-size: var(--t-1);
+  color: var(--texto-suave);
+}

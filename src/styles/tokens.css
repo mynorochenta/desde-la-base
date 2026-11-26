@@ -1,0 +1,32 @@
+/* Dirección visual: cuaderno de cuadritos.
+   Tinta azul para enseñar, rojo de corrección para errores,
+   resaltador amarillo para lo que hay que recordar. */
+:root {
+  --papel: #fafcff;
+  --cuadricula: #dce6f5;
+  --margen: #e0322b;
+
+  --tinta: #1f3fbf;
+  --texto: #1b2a4a;
+  --texto-suave: #4a5878;
+  --rojo: #c8281f;
+  --resaltador: #f5e34a;
+  --verde: #1e7f4f;
+  --lapiz: #8a94a8;
+
+  --cuadro: 1.125rem; /* 18px: tamaño de un cuadrito */
+
+  --mano: 'Kalam', 'Comic Sans MS', cursive;
+  --letra: 'Atkinson Hyperlegible', system-ui, sans-serif;
+
+  /* Escala tipográfica (razón 1.25) */
+  --t-1: 0.8rem;
+  --t0: 1rem;
+  --t1: 1.25rem;
+  --t2: 1.563rem;
+  --t3: 1.953rem;
+  --t4: 2.441rem;
+  --t5: 3.052rem;
+
+  --anillo: 0 0 0 3px var(--papel), 0 0 0 5px var(--tinta);
+}
