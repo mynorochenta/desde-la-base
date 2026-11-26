@@ -16,6 +16,7 @@ export const site = {
       ejercicio: 'ejercicio',
       respuesta: 'respuesta',
       semilla: 'semilla',
+      comentario: 'comentario',
     },
   },
 

@@ -1,0 +1,43 @@
+.teclado {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.45rem;
+  width: 100%;
+  max-width: 22rem;
+}
+
+.tecla {
+  min-height: 3rem;
+  border: 1.5px solid var(--cuadricula);
+  border-bottom: 3px solid #c3d0e6;
+  border-radius: 0.5rem;
+  background: #fff;
+  font-family: var(--mano);
+  font-size: var(--t2);
+  line-height: 1;
+  color: var(--texto);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tecla:active {
+  transform: translateY(1px);
+  border-bottom-width: 2px;
+  background: #f1f5fc;
+}
+
+.tecla:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.tecla-doble {
+  grid-column: span 2;
+}
+
+.tecla-borrar {
+  font-family: var(--letra);
+  font-size: var(--t1);
+  color: var(--texto-suave);
+}

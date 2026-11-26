@@ -3,6 +3,7 @@ import gsap from 'gsap'
 import { href, rutas } from '../router'
 import { usePrefersReducedMotion } from '../ui/useReducedMotion'
 import { site } from '../config/site'
+import { useProgreso } from '../storage/progress'
 import './Inicio.css'
 
 /** Recta numérica dibujada a mano: -3 + 5 = 2. Es el único momento animado de la portada. */
@@ -60,6 +61,7 @@ function Boceto() {
 }
 
 export function Inicio() {
+  const yaHizoDiagnostico = useProgreso().diagnostico !== null
   return (
     <main className="hoja inicio-pagina">
       <h1 className="inicio-titulo">Matemática desde la base</h1>
@@ -72,9 +74,20 @@ export function Inicio() {
       <p className="inicio-texto">Después aprendes solo eso, practicando, sin páginas de teoría.</p>
 
       <div className="inicio-acciones">
-        <a className="boton" href={href(rutas.diagnostico)}>
-          Empezar el diagnóstico
-        </a>
+        {yaHizoDiagnostico ? (
+          <>
+            <a className="boton" href={href(rutas.resultado)}>
+              Ver tu ruta
+            </a>
+            <a className="boton-texto" href={href(rutas.diagnostico)}>
+              Repetir el diagnóstico
+            </a>
+          </>
+        ) : (
+          <a className="boton" href={href(rutas.diagnostico)}>
+            Empezar el diagnóstico
+          </a>
+        )}
         <a className="boton-texto" href={href(rutas.leccion('ley-de-signos'))}>
           Ir directo a la lección de ley de signos
         </a>

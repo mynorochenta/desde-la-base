@@ -133,3 +133,69 @@ a {
     transition-duration: 0.01ms !important;
   }
 }
+
+.boton-chico {
+  min-height: 2.5rem;
+  font-size: var(--t0);
+  padding: 0.4rem 1rem;
+}
+
+.boton-secundario {
+  background: #fff;
+}
+
+/* Fórmulas */
+.formula .katex {
+  font-size: 1.15em;
+}
+
+.formula-grande .katex {
+  font-size: 2.2em;
+}
+
+/* Cuenta de preguntas con palitos */
+.palitos path {
+  stroke: var(--tinta);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  fill: none;
+}
+
+/* Reportar error */
+.reporte {
+  margin-top: calc(var(--cuadro) * 2);
+}
+
+.reporte-enlace {
+  font-size: var(--t-1);
+  color: var(--texto-suave);
+}
+
+.reporte-panel {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.reporte-panel label {
+  margin-top: 0.5rem;
+  font-weight: 700;
+}
+
+.reporte-panel textarea {
+  width: 100%;
+  font: inherit;
+  padding: 0.5rem;
+  border: 1.5px solid var(--cuadricula);
+  border-radius: 0.4rem;
+  background: #fff;
+  color: var(--texto);
+  resize: vertical;
+}
+
+.reporte-nota {
+  font-size: var(--t-1);
+  color: var(--texto-suave);
+}

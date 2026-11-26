@@ -1,0 +1,175 @@
+.diag {
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--cuadro);
+}
+
+.diag-barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 2.5rem;
+  margin-bottom: var(--cuadro);
+}
+
+.diag-salir {
+  font-size: var(--t-1);
+  color: var(--texto-suave);
+}
+
+.diag-cuenta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--mano);
+  font-size: var(--t1);
+  color: var(--tinta);
+}
+
+.diag-intro h1 {
+  font-size: var(--t4);
+  margin-bottom: var(--cuadro);
+}
+
+.diag-intro p {
+  font-size: var(--t1);
+  max-width: 32ch;
+  margin-bottom: var(--cuadro);
+}
+
+.diag-intro .boton {
+  margin-top: var(--cuadro);
+}
+
+.diag-tema {
+  font-size: var(--t-1);
+  color: var(--texto-suave);
+  margin-bottom: 0.25rem;
+}
+
+.diag-enunciado {
+  font-size: var(--t2);
+  font-family: var(--mano);
+  margin-bottom: var(--cuadro);
+  max-width: 24ch;
+}
+
+.diag-formula {
+  min-height: 4.5rem;
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  padding: 0.25rem 0;
+  color: var(--texto);
+}
+
+.diag-respuesta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin: 0.5rem 0 0.25rem;
+}
+
+.diag-igual {
+  font-size: var(--t3);
+  color: var(--texto-suave);
+}
+
+/* La respuesta se escribe a mano sobre un renglón. */
+.diag-campo {
+  flex: 1;
+  min-width: 0;
+  max-width: 14rem;
+  border: none;
+  border-bottom: 2px solid var(--tinta);
+  border-radius: 0;
+  background: transparent;
+  font-family: var(--mano);
+  font-size: var(--t3);
+  color: var(--tinta);
+  padding: 0.1rem 0.25rem;
+  caret-color: var(--margen);
+}
+
+.diag-campo::placeholder {
+  font-size: var(--t1);
+  color: var(--lapiz);
+}
+
+.diag-campo:focus-visible {
+  box-shadow: none;
+  border-bottom-color: var(--margen);
+  background: rgb(245 227 74 / 0.25);
+}
+
+.diag-aviso {
+  color: var(--rojo);
+  font-size: var(--t0);
+  margin-bottom: 0.25rem;
+}
+
+.diag-pregunta .teclado {
+  margin-top: var(--cuadro);
+}
+
+.diag-acciones {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: var(--cuadro);
+}
+
+.diag-retro {
+  margin-top: var(--cuadro);
+  padding: 0.75rem 0;
+}
+
+.diag-retro-fila {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+.diag-retro-fila p {
+  font-family: var(--mano);
+  font-size: var(--t1);
+  line-height: 1.3;
+  padding-top: 0.35rem;
+}
+
+.diag-retro-bien .diag-retro-fila p {
+  color: var(--tinta);
+}
+
+.diag-retro-mal .diag-retro-fila p {
+  color: var(--rojo);
+}
+
+.diag-solucion {
+  margin: 0.75rem 0 var(--cuadro);
+  font-size: var(--t1);
+}
+
+.diag-solucion .formula {
+  background: var(--resaltador);
+  padding: 0 0.3rem;
+}
+
+.diag-retro .boton {
+  margin-top: 0.5rem;
+}
+
+.marca {
+  flex-shrink: 0;
+  fill: none;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.marca-bien {
+  stroke: var(--tinta);
+}
+
+.marca-mal {
+  stroke: var(--margen);
+}

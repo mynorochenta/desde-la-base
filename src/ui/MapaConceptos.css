@@ -1,0 +1,97 @@
+.mapa {
+  width: 100%;
+  max-width: 26rem;
+  overflow: visible;
+}
+
+.mapa-linea {
+  fill: none;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+
+.mapa-linea-firme {
+  stroke: var(--tinta);
+}
+
+.mapa-linea-lapiz {
+  stroke: var(--lapiz);
+  stroke-width: 1.6;
+}
+
+.mapa-nodo circle {
+  stroke-width: 2.5;
+}
+
+.mapa-nodo text {
+  font-family: var(--mano);
+  font-size: 15px;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: var(--papel);
+  stroke-width: 5px;
+  stroke-linejoin: round;
+}
+
+.mapa-dominado circle {
+  fill: var(--tinta);
+  stroke: var(--tinta);
+}
+
+.mapa-dominado text {
+  fill: var(--tinta);
+}
+
+.mapa-check {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mapa-siguiente circle {
+  fill: var(--resaltador);
+  stroke: var(--tinta);
+}
+
+.mapa-siguiente text {
+  fill: var(--texto);
+  font-weight: 700;
+}
+
+.mapa-bloqueado circle {
+  fill: var(--papel);
+  stroke: var(--lapiz);
+  stroke-dasharray: 4 3;
+}
+
+.mapa-bloqueado text {
+  fill: var(--lapiz);
+}
+
+.mapa-aqui-circulo {
+  fill: none;
+  stroke: var(--margen);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.mapa-aqui-texto {
+  font-family: var(--mano);
+  font-size: 17px;
+  font-weight: 700;
+  fill: var(--margen);
+  paint-order: stroke;
+  stroke: var(--papel);
+  stroke-width: 5px;
+}
+
+.mapa-muestra {
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+.mapa-muestra circle {
+  stroke-width: 2;
+}
