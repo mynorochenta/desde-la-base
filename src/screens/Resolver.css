@@ -1,0 +1,84 @@
+.hoja-ancha {
+  max-width: 36rem;
+}
+
+.resolver {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--cuadro) * 2);
+}
+
+.resolver-titulo {
+  font-size: var(--t4);
+  max-width: 14ch;
+  margin-bottom: 0.5rem;
+}
+
+.resolver-texto {
+  margin-bottom: var(--cuadro);
+  font-size: var(--t1);
+}
+
+.resolver-subtitulo {
+  font-size: var(--t2);
+  margin-bottom: 0.5rem;
+}
+
+.resolver-lista {
+  list-style: none;
+  margin: 0 0 var(--cuadro);
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.resolver-ejemplo {
+  min-height: 2.75rem;
+  padding: 0.35rem 0.9rem;
+  border: 1.5px dashed var(--tinta);
+  border-radius: 0.6rem 0.4rem 0.7rem 0.5rem;
+  background: #fff;
+  color: var(--texto);
+  font-size: var(--t1);
+  cursor: pointer;
+}
+
+.resolver-ejemplo:hover {
+  background: var(--resaltador);
+}
+
+.resolver-nota {
+  font-size: var(--t-1);
+  color: var(--texto-suave);
+  max-width: 34ch;
+}
+
+/* Tablet: un poco más de aire. */
+@media (min-width: 48rem) {
+  .hoja-ancha {
+    max-width: 46rem;
+  }
+}
+
+/* Computadora: escribir a la izquierda, ejemplos a la derecha. */
+@media (min-width: 64rem) {
+  .hoja-ancha {
+    max-width: 72rem;
+  }
+
+  .resolver {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    gap: calc(var(--cuadro) * 3);
+    align-items: start;
+  }
+
+  .resolver-titulo {
+    font-size: var(--t5);
+  }
+
+  .resolver-ejemplos {
+    padding-top: calc(var(--cuadro) * 6);
+  }
+}

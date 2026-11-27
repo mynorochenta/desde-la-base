@@ -6,7 +6,12 @@ import type { Plantillas } from './tipos'
 const ENUNCIADO = 'Encuentra el valor de x.'
 
 
-const TRANSPONER = 'Cuando un número cambia de lado, cambia su operación: si estaba sumando, pasa restando (y al revés).'
+/**
+ * Explicación principal: una ecuación es una balanza, y se hace lo mismo en los
+ * dos lados. "Pasa con el signo contrario" solo aparece como atajo.
+ */
+const TRANSPONER =
+  'Para quitar un número de un lado, haz la operación contraria en los dos lados: si está sumando, réstalo en los dos lados (y al revés). Atajo: es como pasarlo al otro lado con el signo contrario.'
 
 export const ecuacionesLineales: Plantillas = {
   unPaso(r) {
@@ -18,7 +23,7 @@ export const ecuacionesLineales: Plantillas = {
       enunciado: ENUNCIADO,
       latex: `x${mas(b)} = ${c}`,
       respuesta: f(x),
-      pista: `Para dejar la x sola, quita el ${b} de la izquierda haciendo lo contrario en los dos lados.`,
+      pista: `Para dejar la x sola, quita el ${b} de la izquierda haciendo la operación contraria en los dos lados.`,
       errores: [{ id: 'transponer', valor: f(c + b), mensaje: TRANSPONER }],
       datos: { a: 1, b, c },
     }
@@ -34,18 +39,18 @@ export const ecuacionesLineales: Plantillas = {
       enunciado: ENUNCIADO,
       latex: `${tx(a)}${mas(b)} = ${c}`,
       respuesta: f(x),
-      pista: `Primero pasa el ${b} al otro lado; después, el ${a} que multiplica a x pasa dividiendo.`,
+      pista: `Primero quita el ${b} haciendo la operación contraria en los dos lados. Después divide los dos lados entre ${a}.`,
       errores: [
         { id: 'transponer', valor: f(c + b, a), mensaje: TRANSPONER },
         {
           id: 'paso-multiplicando',
           valor: f((c - b) * a),
-          mensaje: `El ${a} está multiplicando a la x, así que pasa al otro lado dividiendo, no multiplicando.`,
+          mensaje: `El ${a} está multiplicando a la x. Para quitarlo, divide los dos lados entre ${a}; no multipliques.`,
         },
         {
           id: 'paso-restando',
           valor: f(c - b - a),
-          mensaje: `El ${a} no está sumando: está multiplicando a la x. Por eso pasa dividiendo.`,
+          mensaje: `El ${a} no está sumando: está multiplicando a la x. Por eso se quita dividiendo los dos lados entre ${a}.`,
         },
         {
           id: 'divide-invertido',
@@ -72,7 +77,7 @@ export const ecuacionesLineales: Plantillas = {
       pista: 'Despeja igual que siempre. Si la división no es exacta, deja el resultado como fracción.',
       errores: [
         { id: 'transponer', valor: f(c + b, a), mensaje: TRANSPONER },
-        { id: 'paso-multiplicando', valor: f(p * a), mensaje: `El ${a} está multiplicando a la x, así que pasa dividiendo.` },
+        { id: 'paso-multiplicando', valor: f(p * a), mensaje: `El ${a} está multiplicando a la x. Para quitarlo, divide los dos lados entre ${a}.` },
         { id: 'divide-invertido', valor: f(a, p), mensaje: `Dividiste al revés. Si ${a}·x = ${p}, entonces x = ${p}/${a}.` },
       ],
       datos: { a, b, c },
@@ -91,12 +96,12 @@ export const ecuacionesLineales: Plantillas = {
       enunciado: ENUNCIADO,
       latex: `${tx(a)}${b === 0 ? '' : mas(b)} = ${tx(c)}${d === 0 ? '' : mas(d)}`,
       respuesta: f(x),
-      pista: 'Junta las x en un lado y los números en el otro. Cada término que cambia de lado cambia de signo.',
+      pista: 'Junta las x en un lado y los números en el otro. Para mover un término, haz la operación contraria en los dos lados. Atajo: es como pasarlo al otro lado con el signo contrario.',
       errores: [
         {
           id: 'x-sin-cambiar-signo',
           valor: si(() => f(d - b, a + c)),
-          mensaje: `Al pasar ${tx(c)} al lado izquierdo cambia de signo: queda (${a} − ${c < 0 ? `(${c})` : c})x.`,
+          mensaje: `Para quitar ${tx(c)} de la derecha, réstalo en los dos lados. A la izquierda queda (${a} − ${c < 0 ? `(${c})` : c})x.`,
         },
         { id: 'transponer', valor: si(() => f(d + b, a - c)), mensaje: TRANSPONER },
       ],

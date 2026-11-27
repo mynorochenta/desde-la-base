@@ -6,7 +6,7 @@ export function Pendiente({ titulo }: { titulo: string }) {
     <main className="hoja">
       <h1 style={{ fontSize: 'var(--t3)', marginBottom: 'var(--cuadro)' }}>{titulo}</h1>
       <p style={{ marginBottom: 'calc(var(--cuadro) * 2)' }}>Esta parte todavía se está construyendo.</p>
-      <a className="boton-texto" href={href(rutas.inicio)}>
+      <a className="boton-texto" href={href(rutas.aprender)}>
         Volver al inicio
       </a>
     </main>

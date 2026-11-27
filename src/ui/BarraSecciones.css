@@ -1,0 +1,109 @@
+/* Teléfono: barra fija abajo, al alcance del pulgar. */
+.barra {
+  position: fixed;
+  z-index: 20;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--alto-barra) + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--papel);
+  border-top: 2px solid var(--tinta);
+}
+
+.barra-marca {
+  display: none;
+}
+
+.barra-pestanas {
+  display: flex;
+  height: var(--alto-barra);
+}
+
+.barra-pestana {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1rem;
+  font-family: var(--mano);
+  font-size: var(--t0);
+  font-weight: 700;
+  color: var(--texto-suave);
+  text-decoration: none;
+}
+
+.barra-pestana svg {
+  width: 1.6rem;
+  height: 1.6rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.barra-pestana[aria-current='page'] {
+  color: var(--tinta);
+}
+
+/* La pestaña activa se subraya con resaltador. */
+.barra-pestana[aria-current='page'] span {
+  background: linear-gradient(transparent 55%, var(--resaltador) 55%, var(--resaltador) 92%, transparent 92%);
+  padding: 0 0.3rem;
+}
+
+.app {
+  padding-bottom: calc(var(--alto-barra) + env(safe-area-inset-bottom, 0px));
+}
+
+/* Con el teclado matemático abierto, la barra se esconde y se deja su espacio. */
+[data-teclado-abierto] .barra {
+  display: none;
+}
+
+[data-teclado-abierto] .app {
+  padding-bottom: var(--alto-teclado, 0px);
+}
+
+/* Tablet y computadora: barra arriba, con el nombre del sitio. */
+@media (min-width: 48rem) {
+  .barra {
+    position: sticky;
+    top: 0;
+    bottom: auto;
+    height: auto;
+    padding: 0.5rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: none;
+    border-bottom: 2px solid var(--tinta);
+  }
+
+  .barra-marca {
+    display: block;
+    font-family: var(--mano);
+    font-weight: 700;
+    font-size: var(--t2);
+    color: var(--tinta);
+    text-decoration: none;
+  }
+
+  .barra-pestanas {
+    height: auto;
+    gap: 1.5rem;
+  }
+
+  .barra-pestana {
+    flex-direction: row;
+    gap: 0.4rem;
+    font-size: var(--t1);
+    padding: 0.25rem 0.25rem;
+  }
+
+  .app {
+    padding-bottom: 0;
+  }
+}

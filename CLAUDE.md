@@ -39,7 +39,23 @@ Es para el estudiante que tiene un problema **hoy**, por ejemplo uno de la tarea
 5. **"Revisar mi respuesta".** El estudiante escribe lo que le dio y reglas escritas a mano reconocen el error típico.
 6. **"Practicar uno igual".** Genera un ejercicio con la misma forma y otros números.
 
-- **Cómo entra el problema:** con MathLive, un campo matemático con teclado virtual para el celular (pendiente de aprobar como dependencia), o tocando un ejemplo.
+- **Cómo entra el problema:** con MathLive (aprobado), un campo matemático con teclado virtual para el celular, o tocando un ejemplo.
+  - MathLive se carga solo en Resolver, sin sonidos y sin fuentes propias (usa las de KaTeX).
+  - Siempre hay un campo de texto simple de respaldo: se usa mientras MathLive carga, si tarda más de 8 segundos o si falla.
+  - En la computadora se escribe con el teclado físico.
+- **Seguridad:** el problema que llega en la URL (`?p=`) es texto no confiable.
+  - Nunca se inserta como HTML: siempre pasa por el parser (`src/expr/parse.ts`), que solo acepta una lista cerrada de símbolos.
+  - Lo que se dibuja con KaTeX o se le pasa a MathLive sale del AST, no del texto crudo.
+  - Si no se puede leer, se muestra como texto plano. Hay pruebas de esto en `src/expr/expr.test.ts`.
+- **Números mixtos:** nunca se interpretan desde texto como "1 1/2", porque chocan con la multiplicación implícita. Solo se aceptan con la forma explícita `\mixto{1}{1}{2}` (la tecla 1½ del teclado matemático). Si alguien escribe "1 1/2", la app pregunta qué quiso decir.
+- **Convenciones matemáticas:**
+  - −3² = −9 y (−3)² = 9. Al escribir −3² se muestra una nota.
+  - La multiplicación sin signo tiene la misma prioridad que la de con signo: 6 ÷ 2(1 + 2) = 9. Se muestra una nota que dice que algunos libros y calculadoras dan 1 y recomienda usar paréntesis.
+  - "3/4" entre dos números es una fracción y se agrupa primero: 6 ÷ 3/4 = 8.
+  - División entre cero: "no está definido".
+  - Decimales: todavía no se aceptan. **Siguiente mejora**, porque son comunes en el examen de admisión de la USAC.
+- **Ecuaciones:** la explicación principal es "hacer lo mismo en los dos lados", con la balanza. "Pasa al otro lado con el signo contrario" solo aparece como atajo, en una nota. Los generadores de Aprender enseñan lo mismo.
+- **Diseño adaptable:** funciona en celular, tablet y computadora. En pantallas grandes se aprovecha el espacio (por ejemplo, los pasos y la visual lado a lado). Cada etapa se prueba en los tres tamaños.
 - **Si no lo reconoce:** lo dice con claridad y ofrece el tema más cercano en Aprender. **Nunca inventa un resultado.**
 - **Verificación antes de mostrar:** todo resultado se comprueba de forma independiente, por ejemplo sustituyendo la solución en la ecuación. Si la comprobación falla, no se muestra la solución.
 - **Primeros motores:**
@@ -56,7 +72,7 @@ Es lo que se construyó primero. Se queda igual, pero ya no es la portada:
    - Código: `src/screens/Resultado.tsx` y `src/ui/MapaConceptos.tsx`.
 3. **Lecciones.** Por ahora existe una sola, ley de signos (`src/lessons/ley-de-signos/`). Sigue este orden: exploración visual → ejemplo guiado → práctica generada → mini prueba que desbloquea lo siguiente.
 
-## Navegación (propuesta, pendiente de aprobación)
+## Navegación (aprobada, hecha en la etapa 1)
 
 Rutas por hash:
 
@@ -70,25 +86,30 @@ Rutas por hash:
 
 - El problema va en la ruta. Así el botón "atrás" del teléfono funciona y un problema se puede compartir como enlace. No se guarda en ningún servidor.
 - La mini lección es una hoja que sube desde abajo. "Atrás" la cierra o vuelve al tema anterior.
+- La barra de secciones va abajo en el teléfono y arriba desde 48rem (tablet y computadora). Se esconde mientras el teclado matemático está abierto.
+- `#/dev/flip` es una prueba de la animación FLIP que solo existe con `npm run dev`.
 
-## Arquitectura de Resolver (propuesta, pendiente de aprobación)
+## Arquitectura de Resolver (aprobada; el núcleo está hecho desde la etapa 1)
 
 No hay un sistema de álgebra general. Hay **un motor pequeño por tipo de problema**. Agregar un motor es agregar una carpeta: el registro los encuentra solo con `import.meta.glob`, sin tocar nada más.
 
 ```
 src/
 ├─ expr/            Núcleo compartido nuevo
-│                     · parse.ts     texto o LaTeX de MathLive → AST (Nodo)
+│                     · ast.ts       tipos del árbol (Nodo)
+│                     · parse.ts     texto o LaTeX de MathLive → AST, con avisos
 │                     · evaluar.ts   valor exacto con Fraction
-│                     · tokens.ts    AST → lista de tokens con clave estable
-│                     · latex.ts     AST → LaTeX
+│                     · tokens.ts    AST → tokens con clave estable, y AST → LaTeX
+│                     · construir.ts atajos para armar árboles con ids elegidos
 ├─ motores/
 │  ├─ tipos.ts      Motor, Solucion, Paso, Frame, Visual
-│  ├─ registro.ts   despachador: usa el primer motor que detecta el problema
+│  ├─ registro.ts   despachador: usa el primer motor que detecta el problema y verifica
+│  ├─ cercano.ts    tema más cercano cuando ningún motor puede
 │  ├─ aritmetica/   motor.ts, pasos.ts, errores.ts, parecido.ts, motor.test.ts
 │  └─ ecuacion-lineal/
 ├─ content/mini/    mini lecciones del árbol del porqué, una por concepto
-└─ screens/Resolver*.tsx, ui/ExpresionAnimada.tsx, ui/Balanza.tsx
+├─ resolver/       CampoProblema (MathLive + texto de respaldo), mathlive.ts (carga y teclado)
+└─ screens/Resolver.tsx, screens/Solucion.tsx, ui/ExpresionAnimada.tsx, ui/BarraSecciones.tsx
 ```
 
 Interfaz de cada motor:
@@ -100,7 +121,8 @@ type Motor<P> = {
   detectar(ast: Nodo): P | null               // ¿es mío? Por estructura, no por texto
   resolver(p: P): Solucion
   comprobar(p: P, s: Solucion): boolean       // verificación independiente del resultado
-  revisar(p: P, respuesta: Nodo): Revision    // "Revisar mi respuesta": correcto o error típico
+  revisar(p: P, respuesta: string): Revision  // "Revisar mi respuesta": correcto o error típico
+  expresion(p: P): Nodo                       // el AST del problema
   parecido(p: P, semilla: number): P          // "Practicar uno igual"
 }
 
@@ -159,7 +181,7 @@ Paso: 2x − 1 = 8x + 11  →  2x − 8x = 11 + 1
 - **GSAP** para secuencias: el mapa del resultado y los saltos de la recta numérica.
 - Siempre se respeta `prefers-reduced-motion`. Con movimiento reducido se muestra directamente el estado final (ver `src/ui/useReducedMotion.ts`).
 
-### Tokens de movimiento (se hacen en la etapa 1 de Resolver)
+### Tokens de movimiento (hechos en la etapa 1)
 
 Hoy las duraciones y curvas de animación están escritas en cada componente. La meta es moverlas a tokens, como ya están los colores y las letras en `src/styles/tokens.css`:
 
@@ -167,7 +189,7 @@ Hoy las duraciones y curvas de animación están escritas en cada componente. La
 - **En TypeScript:** un módulo espejo (por ejemplo `src/ui/movimiento.ts`) para Motion y GSAP, con los mismos nombres y valores.
 - **Regla:** ninguna animación nueva escribe una duración a mano; usa un token. Las animaciones viejas se pasan a tokens cuando se toquen.
 
-### FLIP para los pasos de Resolver (propuesta, pendiente de aprobación)
+### FLIP para los pasos de Resolver (hecho en la etapa 1: `src/ui/ExpresionAnimada.tsx`)
 
 Cada frame se dibuja como una lista de tokens con clave estable. Al pasar de un frame al siguiente, cada token **viaja** de su lugar anterior al nuevo. Así se ve que el 8x cruzó al otro lado y cambió de signo, en vez de que la línea se redibuje entera.
 
@@ -176,7 +198,7 @@ Cada frame se dibuja como una lista de tokens con clave estable. Al pasar de un 
 3. **Invert:** se aplica a cada token el `transform` que lo devuelve a su lugar anterior.
 4. **Play:** se anima hasta `transform: none`.
 
-- **Implementación propuesta:** `layout` y `layoutId` de Motion, que ya es dependencia y hace FLIP por dentro. No agrega peso.
+- **Implementación:** `layout="position"` y `layoutId` de Motion dentro de un `LayoutGroup` por expresión. No agrega peso.
 - **Tokens que aparecen o desaparecen:** los nuevos entran con fade; los que se cancelan salen tachados con la pluma roja.
 - **Fracciones:** un token de fracción tiene su numerador y su denominador como tokens hijos, para que un número pueda subir o bajar.
 - **Movimiento reducido:** sin desplazamiento, solo el cambio de estado.
@@ -213,12 +235,15 @@ src/
 ├─ storage/       Progreso versionado en localStorage
 │                   · schema.ts valida y migra
 │                   · también tiene codificar/decodificar para el código de exportación
-├─ screens/       Inicio (será Aprender), Diagnóstico, Resultado, LeccionSignos
-├─ ui/            Teclado, Responder, RectaNumerica (Mafs), MapaConceptos, Formula (KaTeX)…
+├─ expr/          Parser → AST, evaluador exacto, tokens y LaTeX (Resolver)
+├─ motores/       Contrato de motores, despachador con verificación, tema cercano
+├─ resolver/      Campo para escribir el problema (MathLive con respaldo de texto)
+├─ screens/       Resolver, Solucion, Inicio (portada de Aprender), Diagnóstico, Resultado, LeccionSignos
+├─ ui/            BarraSecciones, ExpresionAnimada, movimiento.ts, Teclado, Responder, RectaNumerica (Mafs), MapaConceptos, Formula (KaTeX)…
 └─ config/        site.ts: enlaces de los formularios externos (reportar error, sugerencias)
 ```
 
-Tecnologías: Vite 8, React 19, TypeScript estricto (sin `enum`), Mafs, KaTeX, Motion, GSAP, Vitest y oxlint.
+Tecnologías: Vite 8, React 19, TypeScript estricto (sin `enum`), Mafs, KaTeX, MathLive, Motion, GSAP, Vitest y oxlint.
 
 ## Comandos
 
@@ -263,10 +288,12 @@ Antes de cada commit tienen que pasar sin errores:
    - retroalimentación sin IA;
    - progreso local.
 2. **Fase 2: Resolver (actual).** Va por etapas, y cada una se prueba antes de seguir:
-   1. Núcleo y navegación: parser → AST, evaluador exacto, despachador, tokens y FLIP, barra Resolver / Aprender y entrada del problema.
+   1. **(Hecha)** Núcleo y navegación: parser → AST, evaluador exacto, despachador, tokens y FLIP, barra Resolver / Aprender y entrada del problema. Sin motores todavía: todo problema dice "todavía no sé resolverlo".
    2. Motor de aritmética: pasos animados, recta numérica, revisar mi respuesta, practicar uno igual y las mini lecciones de sus conceptos.
    3. Motor de ecuaciones lineales: balanza, casos sin solución o con infinitas soluciones y su mini lección.
 3. **Después de Resolver:**
+   - decimales en los motores (siguiente mejora, por el examen de la USAC);
+   - portada y pantallas de Aprender aprovechando el ancho en tablet y computadora;
    - lecciones completas de todas las bases en Aprender;
    - pantalla para exportar e importar el progreso con un código.
 4. **Fase 3:** simulacro cronometrado del examen de admisión de la USAC y uso sin internet (PWA).

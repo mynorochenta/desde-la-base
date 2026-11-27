@@ -41,8 +41,8 @@ export function Resultado() {
 
   return (
     <main className="hoja resultado">
-      <a className="boton-texto resultado-volver" href={href(rutas.inicio)}>
-        Inicio
+      <a className="boton-texto resultado-volver" href={href(rutas.aprender)}>
+        Aprender
       </a>
       <h1 className="resultado-titulo">Tu mapa</h1>
       <p className="resultado-texto">
