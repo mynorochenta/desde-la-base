@@ -105,10 +105,11 @@ src/
 │  ├─ tipos.ts      Motor, Solucion, Paso, Frame, Visual
 │  ├─ registro.ts   despachador: usa el primer motor que detecta el problema y verifica
 │  ├─ cercano.ts    tema más cercano cuando ningún motor puede
-│  ├─ aritmetica/   motor.ts, pasos.ts, errores.ts, parecido.ts, motor.test.ts
+│  ├─ aritmetica/   motor.ts, pasos.ts (pasos y su porqué), numeros.ts, errores.ts, parecido.ts, motor.test.ts
 │  └─ ecuacion-lineal/
-├─ content/mini/    mini lecciones del árbol del porqué, una por concepto
-├─ resolver/       CampoProblema (MathLive + texto de respaldo), mathlive.ts (carga y teclado)
+├─ content/mini/    mini lecciones del árbol del porqué, una por concepto (index.ts las junta)
+├─ resolver/       CampoProblema (MathLive + texto de respaldo), mathlive.ts (carga y teclado),
+│                    VisorPasos, RevisarRespuesta, HojaTema (mini lección), temas.ts (lee ?tema=)
 └─ screens/Resolver.tsx, screens/Solucion.tsx, ui/ExpresionAnimada.tsx, ui/BarraSecciones.tsx
 ```
 
@@ -123,7 +124,7 @@ type Motor<P> = {
   comprobar(p: P, s: Solucion): boolean       // verificación independiente del resultado
   revisar(p: P, respuesta: string): Revision  // "Revisar mi respuesta": correcto o error típico
   expresion(p: P): Nodo                       // el AST del problema
-  parecido(p: P, semilla: number): P          // "Practicar uno igual"
+  parecido(p: P, semilla: number): P | null   // "Practicar uno igual"; null si no halló uno sencillo
 }
 
 type Solucion = { pasos: Paso[]; resultado: Resultado }
@@ -145,7 +146,8 @@ type Frame = { expr: Nodo; resaltar?: string[] }
 - **El AST manda.** Cada frame guarda la expresión como AST, no solo como dibujo. Así las pruebas evalúan cada frame y comprueban que el valor no cambia entre pasos.
 - **Identidad de los términos.** El motor decide qué término es "el mismo" de un paso a otro dándole el mismo id. Es parte de la solución, no de la vista.
 - **Núcleo que se reutiliza:** `engine/fraction.ts`, `engine/rng.ts`, `engine/parse.ts` (para leer respuestas) y `engine/verify.ts` (reglas generales de error: signo y fracción volteada).
-- **Relación con los generadores.** Los errores comunes de `src/content/generators/*.ts` pasan al `revisar` de cada motor como reglas. No se duplican: el generador y el motor usan la misma función de error.
+- **Relación con los generadores (meta, pendiente).** Los errores comunes de `src/content/generators/*.ts` deberían pasar al `revisar` de cada motor como reglas, sin duplicarse. Hoy no es así: el motor de aritmética tiene sus reglas en `motores/aritmetica/errores.ts` (calcula el problema con un solo error, sobre el AST) y los generadores calculan sus errores en cada plantilla. Unificarlos es un cambio grande: pedir aprobación antes.
+- **El porqué del orden.** Cada paso de una operación dice por qué va en ese momento (paréntesis, potencias, multiplicar antes de sumar, izquierda a derecha). Lo calcula `porQueAhora` en `pasos.ts`, y en ese caso el paso también ofrece el botón de "Orden de las operaciones".
 - **Revisar mi respuesta.** Cada error típico es una forma equivocada de calcular, por ejemplo ir de izquierda a derecha sin jerarquía o sumar numeradores con numeradores y denominadores con denominadores. Si la respuesta del estudiante coincide con una, se explica ese error y se señala el paso donde se separó del camino correcto.
 - **Practicar uno igual.** Cambia los números del AST con una semilla y conserva la forma. Repite hasta que el resultado sea sencillo: sin división entre cero y con denominadores pequeños.
 - **Pruebas por motor** (Vitest), con muchas semillas:
@@ -185,7 +187,7 @@ Paso: 2x − 1 = 8x + 11  →  2x − 8x = 11 + 1
 
 Hoy las duraciones y curvas de animación están escritas en cada componente. La meta es moverlas a tokens, como ya están los colores y las letras en `src/styles/tokens.css`:
 
-- **En CSS:** `--dur-rapida`, `--dur-media`, `--dur-lenta`, `--curva-entrada`, `--curva-salida`, `--curva-rebote`.
+- **En CSS:** `--dur-rapida`, `--dur-media`, `--dur-lenta`, `--dur-pausa` (tiempo para leer un momento de un paso), `--curva-entrada`, `--curva-salida`, `--curva-rebote`.
 - **En TypeScript:** un módulo espejo (por ejemplo `src/ui/movimiento.ts`) para Motion y GSAP, con los mismos nombres y valores.
 - **Regla:** ninguna animación nueva escribe una duración a mano; usa un token. Las animaciones viejas se pasan a tokens cuando se toquen.
 
@@ -237,7 +239,7 @@ src/
 │                   · también tiene codificar/decodificar para el código de exportación
 ├─ expr/          Parser → AST, evaluador exacto, tokens y LaTeX (Resolver)
 ├─ motores/       Contrato de motores, despachador con verificación, tema cercano
-├─ resolver/      Campo para escribir el problema (MathLive con respaldo de texto)
+├─ resolver/      Campo para escribir el problema, visor de pasos, revisar mi respuesta y la hoja de mini lección
 ├─ screens/       Resolver, Solucion, Inicio (portada de Aprender), Diagnóstico, Resultado, LeccionSignos
 ├─ ui/            BarraSecciones, ExpresionAnimada, movimiento.ts, Teclado, Responder, RectaNumerica (Mafs), MapaConceptos, Formula (KaTeX)…
 └─ config/        site.ts: enlaces de los formularios externos (reportar error, sugerencias)
@@ -289,7 +291,7 @@ Antes de cada commit tienen que pasar sin errores:
    - progreso local.
 2. **Fase 2: Resolver (actual).** Va por etapas, y cada una se prueba antes de seguir:
    1. **(Hecha)** Núcleo y navegación: parser → AST, evaluador exacto, despachador, tokens y FLIP, barra Resolver / Aprender y entrada del problema. Sin motores todavía: todo problema dice "todavía no sé resolverlo".
-   2. Motor de aritmética: pasos animados, recta numérica, revisar mi respuesta, practicar uno igual y las mini lecciones de sus conceptos.
+   2. **(Hecha)** Motor de aritmética: pasos animados, recta numérica, revisar mi respuesta, practicar uno igual y las mini lecciones de sus conceptos.
    3. Motor de ecuaciones lineales: balanza, casos sin solución o con infinitas soluciones y su mini lección.
 3. **Después de Resolver:**
    - decimales en los motores (siguiente mejora, por el examen de la USAC);

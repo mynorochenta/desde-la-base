@@ -77,6 +77,9 @@ export function revisarAritmetica(p: ProblemaAritmetica, respuesta: string): Rev
       ? { estado: 'correcto', mensaje: 'Correcto: no está definido, porque hay una división entre 0.' }
       : { estado: 'incorrecto', mensaje: 'Este problema no tiene resultado: en algún momento hay que dividir entre 0.', errorId: 'division-cero' }
   }
+  if (/^\s*(no|indef)/i.test(respuesta)) {
+    return { estado: 'incorrecto', mensaje: 'Este problema sí tiene resultado: en ningún momento se divide entre 0.', errorId: null }
+  }
   const lectura = leerRespuesta(respuesta)
   if (!lectura.ok) return { estado: 'invalido', mensaje: lectura.mensaje }
   const r = verificar(ej, respuesta)

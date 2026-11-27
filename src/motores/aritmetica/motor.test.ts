@@ -228,6 +228,14 @@ describe('revisar mi respuesta', () => {
     expect(revisar('1/3 + 1/6', '3/6').estado).toBe('casi')
   })
 
+  it('"no está definido" solo es correcto si hay una división entre 0', () => {
+    expect(revisar('5/(2 - 2)', 'no está definido').estado).toBe('correcto')
+    expect(revisar('3 ÷ 0', '0').estado).toBe('incorrecto')
+    const r = revisar('2 + 2', 'no está definido')
+    expect(r.estado).toBe('incorrecto')
+    expect(r.mensaje).toContain('sí tiene resultado')
+  })
+
   it('una respuesta que no se entiende no cuenta', () => {
     expect(revisar('2 + 2', 'cuatro').estado).toBe('invalido')
   })

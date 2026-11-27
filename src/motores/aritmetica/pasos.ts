@@ -659,7 +659,8 @@ export function resolverAritmetica(entrada: Nodo): SolucionAritmetica {
       explicacion: razon ? `${razon} ${a.explicacion}` : a.explicacion,
       ...(a.nota ? { nota: a.nota } : {}),
       frames,
-      conceptos: [...new Set(a.conceptos)],
+      // Si el paso dice por qué va en ese orden, también ofrece el tema del orden.
+      conceptos: [...new Set<ConceptoId>([...a.conceptos, ...(razon ? (['jerarquia'] as const) : [])])],
       ...(a.visual ? { visual: a.visual } : {}),
       regla: a.regla,
     })

@@ -1,0 +1,158 @@
+/* Mini lección: una hoja de cuaderno que sube desde abajo. */
+body.con-hoja {
+  overflow: hidden;
+}
+
+.hoja-tema-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgb(27 42 74 / 0.35);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.hoja-tema {
+  position: relative;
+  width: 100%;
+  max-width: 40rem;
+  max-height: 92dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background-color: var(--papel);
+  background-image:
+    linear-gradient(var(--cuadricula) 1px, transparent 1px),
+    linear-gradient(90deg, var(--cuadricula) 1px, transparent 1px);
+  background-size: var(--cuadro) var(--cuadro);
+  border-top: 3px solid var(--tinta);
+  border-radius: 1rem 1.2rem 0 0;
+  padding: 0.75rem var(--cuadro) calc(var(--cuadro) * 2);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.hoja-tema-barra {
+  position: sticky;
+  top: -0.75rem;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: -0.75rem calc(var(--cuadro) * -1) 0;
+  padding: 0.6rem var(--cuadro);
+  background: var(--papel);
+  border-bottom: 1px solid var(--cuadricula);
+}
+
+.hoja-tema-migas ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  font-size: var(--t-1);
+}
+
+.hoja-tema-migas li + li::before {
+  content: '›';
+  margin-right: 0.25rem;
+  color: var(--texto-suave);
+}
+
+.hoja-tema-migas a {
+  color: var(--tinta);
+}
+
+.hoja-tema-migas [aria-current] {
+  font-weight: 700;
+}
+
+.hoja-tema-cerrar {
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 2px solid var(--tinta);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--tinta);
+  font-size: var(--t1);
+  cursor: pointer;
+}
+
+.hoja-tema-titulo {
+  font-family: var(--mano);
+  font-size: var(--t3);
+  color: var(--tinta);
+}
+
+.hoja-tema-regla {
+  font-size: var(--t1);
+  line-height: 1.45;
+}
+
+.hoja-tema-sub {
+  font-family: var(--mano);
+  font-size: var(--t2);
+  margin-top: 0.5rem;
+}
+
+.hoja-tema-ejemplos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.hoja-tema-ejemplos li {
+  border-left: 3px solid var(--tinta);
+  padding-left: 0.75rem;
+}
+
+.hoja-tema-cuidado {
+  border-left: 3px solid var(--margen);
+  padding-left: 0.75rem;
+}
+
+.hoja-tema-cuidado strong {
+  color: var(--rojo);
+}
+
+.hoja-tema-cuenta {
+  font-size: var(--t-1);
+  color: var(--texto-suave);
+}
+
+.hoja-tema-abajo ul {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.hoja-tema-salidas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.25rem;
+  margin-top: 0.5rem;
+}
+
+@media (min-width: 48rem) {
+  .hoja-tema-fondo {
+    align-items: center;
+  }
+
+  .hoja-tema {
+    border: 3px solid var(--tinta);
+    border-radius: 1rem;
+    max-height: 88dvh;
+  }
+}

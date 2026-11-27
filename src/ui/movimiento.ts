@@ -8,6 +8,8 @@ export const dur = {
   rapida: 0.15,
   media: 0.3,
   lenta: 0.6,
+  /** Tiempo para leer un momento de un paso antes de pasar al siguiente. */
+  pausa: 1.1,
 } as const
 
 /** Curvas como bezier, para Motion. */

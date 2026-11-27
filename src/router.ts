@@ -62,9 +62,10 @@ export function useRuta(): string {
   return useUbicacion().camino
 }
 
-export function ir(ruta: string) {
+/** Navega a la ruta. Con `arriba: false` no sube la página (por ejemplo, al abrir una hoja). */
+export function ir(ruta: string, { arriba = true }: { arriba?: boolean } = {}) {
   window.location.hash = ruta
-  window.scrollTo(0, 0)
+  if (arriba) window.scrollTo(0, 0)
 }
 
 export function href(ruta: string) {
