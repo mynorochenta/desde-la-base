@@ -1,0 +1,93 @@
+.ea {
+  display: inline-block;
+  max-width: 100%;
+  overflow-x: auto;
+  font-size: 1.25rem;
+  padding: 0.25rem 0.1rem;
+}
+
+.ea-grande {
+  font-size: 1.75rem;
+}
+
+@media (min-width: 48rem) {
+  .ea-grande {
+    font-size: 2.25rem;
+  }
+}
+
+.ea-linea,
+.ea-num,
+.ea-den,
+.ea-base {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.ea-token {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+}
+
+.ea-token .katex {
+  font-size: 1em;
+}
+
+.ea-operador {
+  margin: 0 0.28em;
+}
+
+.ea-frac {
+  flex-direction: column;
+  vertical-align: middle;
+  margin: 0 0.12em;
+}
+
+.ea-num,
+.ea-den {
+  justify-content: center;
+  font-size: 0.85em;
+  padding: 0 0.15em;
+}
+
+.ea-raya {
+  align-self: stretch;
+  height: 2px;
+  margin: 0.1em 0;
+  background: currentColor;
+  border-radius: 1px;
+}
+
+.ea-pot {
+  align-items: flex-start;
+}
+
+.ea-exp {
+  display: inline-flex;
+  font-size: 0.65em;
+  margin-top: -0.15em;
+}
+
+.ea-exp .katex,
+.ea-base .katex {
+  line-height: 1;
+}
+
+.ea-resaltado {
+  background: linear-gradient(transparent 20%, var(--resaltador) 20%, var(--resaltador) 85%, transparent 85%);
+  border-radius: 0.2em;
+}
+
+/* Tachado con la pluma roja. */
+.ea-tachado::after {
+  content: '';
+  position: absolute;
+  left: -0.1em;
+  right: -0.1em;
+  top: 50%;
+  height: 2px;
+  background: var(--rojo);
+  transform: rotate(-12deg);
+}

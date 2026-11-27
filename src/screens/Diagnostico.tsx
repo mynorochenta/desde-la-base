@@ -65,7 +65,7 @@ export function Diagnostico() {
   return (
     <main className="hoja diag">
       <div className="diag-barra">
-        <a className="boton-texto diag-salir" href={href(rutas.inicio)}>
+        <a className="boton-texto diag-salir" href={href(rutas.aprender)}>
           Salir
         </a>
         {empezado && (

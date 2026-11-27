@@ -26,18 +26,45 @@ Este archivo describe la visión completa. Algunas partes ya existen y otras sol
 
 ## Las dos secciones
 
-### Resolver: la sección principal (planeada, no existe todavía)
+La app tiene dos secciones, con una barra de navegación abajo en el teléfono: **Resolver** y **Aprender**. Comparten el mapa de conceptos (`src/content/concepts.ts`).
 
-El estudiante trae **su** problema, por ejemplo uno de la tarea o de una guía de examen, y la app lo resuelve paso a paso, explicando cada paso.
+### Resolver: la sección principal (en construcción)
 
-- **Cómo entra el problema:** con el teclado matemático que ya existe (`src/ui/Teclado.tsx`), o eligiendo una plantilla ("ecuación lineal", "suma de fracciones"…).
-- **Qué devuelve:** una lista de pasos. Cada paso dice qué cambió y por qué. El porqué se puede abrir con el [árbol del porqué](#árbol-del-porqué).
-- **Si no lo reconoce:** si ningún motor puede con el problema, lo dice con claridad y ofrece el tema más cercano en Aprender. **Nunca inventa un resultado.**
-- **Lugar en la app:** será la puerta de entrada principal. Hoy la pantalla de inicio lleva al diagnóstico; cuando exista Resolver, el inicio se reorganiza.
+Es para el estudiante que tiene un problema **hoy**, por ejemplo uno de la tarea o de una guía de examen. Lo escribe y la app:
 
-### Aprender (existe, fase 1)
+1. **Lo resuelve paso a paso**, con animaciones: las partes de la expresión se deslizan de un paso al siguiente (ver [FLIP](#flip-para-los-pasos-de-resolver)).
+2. **Explica el porqué de cada paso** en una o dos frases.
+3. **Árbol del porqué.** Cada paso trae botones con los temas que usa ("Ley de signos", "Sumar fracciones"). Un botón abre una mini lección ahí mismo; desde ella se puede bajar a temas más básicos (los prerrequisitos del mapa) y volver al problema. Ver [Árbol del porqué](#árbol-del-porqué).
+4. **Lo muestra de forma visual** cuando se puede: recta numérica, balanza o gráfica.
+5. **"Revisar mi respuesta".** El estudiante escribe lo que le dio y reglas escritas a mano reconocen el error típico.
+6. **"Practicar uno igual".** Genera un ejercicio con la misma forma y otros números.
 
-Es lo que ya está construido:
+- **Cómo entra el problema:** con MathLive (aprobado), un campo matemático con teclado virtual para el celular, o tocando un ejemplo.
+  - MathLive se carga solo en Resolver, sin sonidos y sin fuentes propias (usa las de KaTeX).
+  - Siempre hay un campo de texto simple de respaldo: se usa mientras MathLive carga, si tarda más de 8 segundos o si falla.
+  - En la computadora se escribe con el teclado físico.
+- **Seguridad:** el problema que llega en la URL (`?p=`) es texto no confiable.
+  - Nunca se inserta como HTML: siempre pasa por el parser (`src/expr/parse.ts`), que solo acepta una lista cerrada de símbolos.
+  - Lo que se dibuja con KaTeX o se le pasa a MathLive sale del AST, no del texto crudo.
+  - Si no se puede leer, se muestra como texto plano. Hay pruebas de esto en `src/expr/expr.test.ts`.
+- **Números mixtos:** nunca se interpretan desde texto como "1 1/2", porque chocan con la multiplicación implícita. Solo se aceptan con la forma explícita `\mixto{1}{1}{2}` (la tecla 1½ del teclado matemático). Si alguien escribe "1 1/2", la app pregunta qué quiso decir.
+- **Convenciones matemáticas:**
+  - −3² = −9 y (−3)² = 9. Al escribir −3² se muestra una nota.
+  - La multiplicación sin signo tiene la misma prioridad que la de con signo: 6 ÷ 2(1 + 2) = 9. Se muestra una nota que dice que algunos libros y calculadoras dan 1 y recomienda usar paréntesis.
+  - "3/4" entre dos números es una fracción y se agrupa primero: 6 ÷ 3/4 = 8.
+  - División entre cero: "no está definido".
+  - Decimales: todavía no se aceptan. **Siguiente mejora**, porque son comunes en el examen de admisión de la USAC.
+- **Ecuaciones:** la explicación principal es "hacer lo mismo en los dos lados", con la balanza. "Pasa al otro lado con el signo contrario" solo aparece como atajo, en una nota. Los generadores de Aprender enseñan lo mismo.
+- **Diseño adaptable:** funciona en celular, tablet y computadora. En pantallas grandes se aprovecha el espacio (por ejemplo, los pasos y la visual lado a lado). Cada etapa se prueba en los tres tamaños.
+- **Si no lo reconoce:** lo dice con claridad y ofrece el tema más cercano en Aprender. **Nunca inventa un resultado.**
+- **Verificación antes de mostrar:** todo resultado se comprueba de forma independiente, por ejemplo sustituyendo la solución en la ecuación. Si la comprobación falla, no se muestra la solución.
+- **Primeros motores:**
+  1. Aritmética: enteros, ley de signos, fracciones y jerarquía de operaciones.
+  2. Ecuaciones lineales con una incógnita, con balanza visual.
+
+### Aprender: la sección secundaria (existe, fase 1)
+
+Es lo que se construyó primero. Se queda igual, pero ya no es la portada:
 
 1. **Diagnóstico adaptativo.** Son 12 preguntas como máximo. Recorre el mapa de conceptos: si fallas un tema baja a sus prerrequisitos, y si lo dominas sube.
    - Código: `src/diagnostic/machine.ts` y `src/screens/Diagnostico.tsx`.
@@ -45,62 +72,106 @@ Es lo que ya está construido:
    - Código: `src/screens/Resultado.tsx` y `src/ui/MapaConceptos.tsx`.
 3. **Lecciones.** Por ahora existe una sola, ley de signos (`src/lessons/ley-de-signos/`). Sigue este orden: exploración visual → ejemplo guiado → práctica generada → mini prueba que desbloquea lo siguiente.
 
-Las dos secciones comparten el mapa de conceptos. Un paso de Resolver que usa una regla apunta al concepto de esa regla, y desde ahí a su lección en Aprender.
+## Navegación (aprobada, hecha en la etapa 1)
 
-## Arquitectura de motores por tipo de problema (planeada)
+Rutas por hash:
 
-No hay un sistema de álgebra general. Hay **un motor pequeño por tipo de problema**, cada uno con su lógica y sus pruebas. Un motor nuevo no toca a los demás.
+| Ruta | Pantalla | Pestaña |
+| --- | --- | --- |
+| `#/` | Resolver: escribir el problema | Resolver |
+| `#/resolver?p=<problema>` | La solución paso a paso | Resolver |
+| `#/resolver?p=<problema>&tema=signos,enteros` | Mini lección abierta (la pila de temas va en la ruta) | Resolver |
+| `#/aprender` | La portada que antes era el inicio | Aprender |
+| `#/diagnostico`, `#/resultado`, `#/leccion/<id>` | Igual que ahora | Aprender |
 
-Interfaz prevista para cada motor:
+- El problema va en la ruta. Así el botón "atrás" del teléfono funciona y un problema se puede compartir como enlace. No se guarda en ningún servidor.
+- La mini lección es una hoja que sube desde abajo. "Atrás" la cierra o vuelve al tema anterior.
+- La barra de secciones va abajo en el teléfono y arriba desde 48rem (tablet y computadora). Se esconde mientras el teclado matemático está abierto.
+- `#/dev/flip` es una prueba de la animación FLIP que solo existe con `npm run dev`.
+
+## Arquitectura de Resolver (aprobada; el núcleo está hecho desde la etapa 1)
+
+No hay un sistema de álgebra general. Hay **un motor pequeño por tipo de problema**. Agregar un motor es agregar una carpeta: el registro los encuentra solo con `import.meta.glob`, sin tocar nada más.
+
+```
+src/
+├─ expr/            Núcleo compartido nuevo
+│                     · ast.ts       tipos del árbol (Nodo)
+│                     · parse.ts     texto o LaTeX de MathLive → AST, con avisos
+│                     · evaluar.ts   valor exacto con Fraction
+│                     · tokens.ts    AST → tokens con clave estable, y AST → LaTeX
+│                     · construir.ts atajos para armar árboles con ids elegidos
+├─ motores/
+│  ├─ tipos.ts      Motor, Solucion, Paso, Frame, Visual
+│  ├─ registro.ts   despachador: usa el primer motor que detecta el problema y verifica
+│  ├─ cercano.ts    tema más cercano cuando ningún motor puede
+│  ├─ aritmetica/   motor.ts, pasos.ts, errores.ts, parecido.ts, motor.test.ts
+│  └─ ecuacion-lineal/
+├─ content/mini/    mini lecciones del árbol del porqué, una por concepto
+├─ resolver/       CampoProblema (MathLive + texto de respaldo), mathlive.ts (carga y teclado)
+└─ screens/Resolver.tsx, screens/Solucion.tsx, ui/ExpresionAnimada.tsx, ui/BarraSecciones.tsx
+```
+
+Interfaz de cada motor:
 
 ```ts
 type Motor<P> = {
-  tipo: string                                   // 'enteros-signos', 'fracciones-suma', 'ecuacion-lineal'…
-  concepto: ConceptoId                           // a qué concepto del mapa pertenece
-  reconocer(entrada: Expr): P | null             // ¿este problema es mío? (estructura, no texto)
-  resolver(p: P): Paso[]                         // solución paso a paso, determinista
-  generar(semilla: number): P                    // para practicar en Aprender
-  erroresComunes(p: P): ErrorComun[]             // valores que dan los errores típicos y su explicación
+  id: string                                  // 'aritmetica', 'ecuacion-lineal'
+  prioridad: number                           // el despachador prueba de menor a mayor
+  detectar(ast: Nodo): P | null               // ¿es mío? Por estructura, no por texto
+  resolver(p: P): Solucion
+  comprobar(p: P, s: Solucion): boolean       // verificación independiente del resultado
+  revisar(p: P, respuesta: string): Revision  // "Revisar mi respuesta": correcto o error típico
+  expresion(p: P): Nodo                       // el AST del problema
+  parecido(p: P, semilla: number): P          // "Practicar uno igual"
 }
+
+type Solucion = { pasos: Paso[]; resultado: Resultado }
+// Resultado: un valor exacto, x = valor, "sin solución", "infinitas soluciones"
+// o "no está definido" (división entre cero)
 
 type Paso = {
-  antes: Expr
-  despues: Expr
-  regla: ReglaId                                 // raíz del árbol del porqué de este paso
-  terminos: Array<{ id: string; de?: string }>   // identidad de cada término, para animar (ver FLIP)
+  titulo: string                              // "Multiplica primero"
+  explicacion: string                         // el porqué, en una o dos frases
+  frames: Frame[]                             // normalmente antes y después
+  conceptos: ConceptoId[]                     // botones del árbol del porqué
+  visual?: Visual                             // recta, balanza o gráfica
 }
+
+type Frame = { expr: Nodo; resaltar?: string[] }
+// Cada nodo del AST lleva un id estable. Los tokens salen del AST y su clave es ese id.
 ```
 
-- **Despacho.** El despachador recorre los motores en orden de prioridad y usa el primero que reconoce el problema.
-- **Núcleo compartido.** Se reutiliza lo que ya existe: `engine/fraction.ts`, `engine/parse.ts`, `engine/rng.ts` y `engine/verify.ts`.
-- **Relación con lo actual.** Los generadores de `src/content/generators/*.ts` ya cubren `generar` y `erroresComunes`. Cuando se construyan los motores, cada generador pasa a ser parte de su motor. No hay que duplicarlos.
-- **Ubicación prevista:** `src/motores/<tipo>/`, con su `motor.ts`, `reglas.ts` y `motor.test.ts`.
-- **Pruebas.** Cada motor necesita pruebas de que:
-  - el resultado final es correcto con muchas semillas;
-  - cada paso conserva el valor de la expresión;
-  - no reconoce problemas que no son suyos.
+- **El AST manda.** Cada frame guarda la expresión como AST, no solo como dibujo. Así las pruebas evalúan cada frame y comprueban que el valor no cambia entre pasos.
+- **Identidad de los términos.** El motor decide qué término es "el mismo" de un paso a otro dándole el mismo id. Es parte de la solución, no de la vista.
+- **Núcleo que se reutiliza:** `engine/fraction.ts`, `engine/rng.ts`, `engine/parse.ts` (para leer respuestas) y `engine/verify.ts` (reglas generales de error: signo y fracción volteada).
+- **Relación con los generadores.** Los errores comunes de `src/content/generators/*.ts` pasan al `revisar` de cada motor como reglas. No se duplican: el generador y el motor usan la misma función de error.
+- **Revisar mi respuesta.** Cada error típico es una forma equivocada de calcular, por ejemplo ir de izquierda a derecha sin jerarquía o sumar numeradores con numeradores y denominadores con denominadores. Si la respuesta del estudiante coincide con una, se explica ese error y se señala el paso donde se separó del camino correcto.
+- **Practicar uno igual.** Cambia los números del AST con una semilla y conserva la forma. Repite hasta que el resultado sea sencillo: sin división entre cero y con denominadores pequeños.
+- **Pruebas por motor** (Vitest), con muchas semillas:
+  - el resultado coincide con la evaluación independiente;
+  - cada paso conserva el valor de la expresión, o el conjunto solución de la ecuación;
+  - casos borde: negativos, fracciones, ceros, división entre cero, ecuaciones sin solución o con infinitas soluciones;
+  - no detecta problemas que no son suyos (por ejemplo, x² = 4 no es una ecuación lineal).
 
-## Árbol del porqué (planeado)
+## Árbol del porqué
 
-Cada paso de una solución se justifica con una **regla**, y cada regla se puede abrir para ver por qué es cierta. El estudiante baja tanto como necesita:
+Cada paso tiene botones con los conceptos que usa. Cada botón abre la **mini lección** de ese concepto:
 
 ```
 Paso: 2x − 1 = 8x + 11  →  2x − 8x = 11 + 1
-└─ ¿Por qué? Regla: lo que pasa al otro lado cambia de signo
-   └─ ¿Por qué? Restar 8x en los dos lados mantiene la igualdad
-      └─ ¿Por qué? Una igualdad es una balanza… → concepto: ecuaciones
-         └─ ¿Te cuesta restar con negativos? → lección: ley de signos
+  [Ecuaciones lineales] [Ley de signos]
+        └─ Mini lección: Ley de signos
+           · la regla en una frase y un ejemplo
+           · 2 o 3 ejercicios cortos para probar
+           · ¿Te cuesta? Baja a: [Números enteros]   ← prerrequisitos del mapa
+           · Abrir la lección completa en Aprender    ← si existe
+           · Volver al problema
 ```
 
-- **Es contenido escrito a mano**, no generado. Las reglas son datos (`src/content/reglas.ts` o algo parecido). Cada nodo tiene:
-  - `id`;
-  - `texto`;
-  - `latex` (opcional);
-  - `concepto` (opcional);
-  - `hijos` (la lista de nodos de abajo).
-- **Varios motores comparten reglas.** Por ejemplo, "menos por menos da más" se usa en signos, en potencias y en ecuaciones.
-- **Las hojas conectan con Aprender.** Las hojas más profundas apuntan a un concepto del mapa y a su lección, así el porqué termina en algo que se puede practicar.
-- **Se ve como desplegables.** Cada nivel se abre con un "¿Por qué?". Así la pantalla del teléfono no se llena de texto.
+- **El árbol es el mapa de conceptos.** Bajar es ir a los prerrequisitos de `concepts.ts`. No hay otro grafo.
+- **Es contenido escrito a mano**, en `src/content/mini/<concepto>.ts`. Los ejercicios cortos salen de los generadores que ya existen.
+- **Se ve como una hoja** que sube desde abajo, con una fila de migas ("Ley de signos › Enteros") para volver.
 
 ## Animaciones: tokens y FLIP
 
@@ -110,26 +181,26 @@ Paso: 2x − 1 = 8x + 11  →  2x − 8x = 11 + 1
 - **GSAP** para secuencias: el mapa del resultado y los saltos de la recta numérica.
 - Siempre se respeta `prefers-reduced-motion`. Con movimiento reducido se muestra directamente el estado final (ver `src/ui/useReducedMotion.ts`).
 
-### Tokens de movimiento (planeado)
+### Tokens de movimiento (hechos en la etapa 1)
 
 Hoy las duraciones y curvas de animación están escritas en cada componente. La meta es moverlas a tokens, como ya están los colores y las letras en `src/styles/tokens.css`:
 
 - **En CSS:** `--dur-rapida`, `--dur-media`, `--dur-lenta`, `--curva-entrada`, `--curva-salida`, `--curva-rebote`.
 - **En TypeScript:** un módulo espejo (por ejemplo `src/ui/movimiento.ts`) para Motion y GSAP, con los mismos nombres y valores.
-- **Regla:** ninguna animación nueva escribe una duración a mano; usa un token.
+- **Regla:** ninguna animación nueva escribe una duración a mano; usa un token. Las animaciones viejas se pasan a tokens cuando se toquen.
 
-### FLIP para los pasos de Resolver (planeado)
+### FLIP para los pasos de Resolver (hecho en la etapa 1: `src/ui/ExpresionAnimada.tsx`)
 
-Cuando un paso cambia la expresión, cada término **viaja** de su lugar anterior al nuevo. Así se ve que el 8x cruzó al otro lado y cambió de signo, en vez de que la línea se redibuje entera.
+Cada frame se dibuja como una lista de tokens con clave estable. Al pasar de un frame al siguiente, cada token **viaja** de su lugar anterior al nuevo. Así se ve que el 8x cruzó al otro lado y cambió de signo, en vez de que la línea se redibuje entera.
 
-1. **First:** se mide la posición de cada término en la expresión de antes.
-2. **Last:** se dibuja la expresión nueva y se mide otra vez.
-3. **Invert:** se aplica a cada término el `transform` que lo devuelve a su lugar anterior.
+1. **First:** se mide la posición de cada token en el frame de antes.
+2. **Last:** se dibuja el frame nuevo y se mide otra vez.
+3. **Invert:** se aplica a cada token el `transform` que lo devuelve a su lugar anterior.
 4. **Play:** se anima hasta `transform: none`.
 
-- **Identidad de los términos.** Funciona porque cada término tiene un `id` estable entre pasos (`Paso.terminos`). El motor decide qué término es "el mismo" de un paso a otro: es parte de la solución, no de la vista.
-- **Términos que aparecen o desaparecen.** Los nuevos entran con opacidad y los que se cancelan salen tachados con la pluma roja.
-- **Implementación:** se puede usar `layoutId` de Motion (que hace FLIP por dentro) o un FLIP propio con GSAP. Hay que decidir al construirlo.
+- **Implementación:** `layout="position"` y `layoutId` de Motion dentro de un `LayoutGroup` por expresión. No agrega peso.
+- **Tokens que aparecen o desaparecen:** los nuevos entran con fade; los que se cancelan salen tachados con la pluma roja.
+- **Fracciones:** un token de fracción tiene su numerador y su denominador como tokens hijos, para que un número pueda subir o bajar.
 - **Movimiento reducido:** sin desplazamiento, solo el cambio de estado.
 
 ## Diseño
@@ -164,12 +235,15 @@ src/
 ├─ storage/       Progreso versionado en localStorage
 │                   · schema.ts valida y migra
 │                   · también tiene codificar/decodificar para el código de exportación
-├─ screens/       Inicio, Diagnóstico, Resultado, LeccionSignos
-├─ ui/            Teclado, Responder, RectaNumerica (Mafs), MapaConceptos, Formula (KaTeX)…
+├─ expr/          Parser → AST, evaluador exacto, tokens y LaTeX (Resolver)
+├─ motores/       Contrato de motores, despachador con verificación, tema cercano
+├─ resolver/      Campo para escribir el problema (MathLive con respaldo de texto)
+├─ screens/       Resolver, Solucion, Inicio (portada de Aprender), Diagnóstico, Resultado, LeccionSignos
+├─ ui/            BarraSecciones, ExpresionAnimada, movimiento.ts, Teclado, Responder, RectaNumerica (Mafs), MapaConceptos, Formula (KaTeX)…
 └─ config/        site.ts: enlaces de los formularios externos (reportar error, sugerencias)
 ```
 
-Tecnologías: Vite 8, React 19, TypeScript estricto (sin `enum`), Mafs, KaTeX, Motion, GSAP, Vitest y oxlint.
+Tecnologías: Vite 8, React 19, TypeScript estricto (sin `enum`), Mafs, KaTeX, MathLive, Motion, GSAP, Vitest y oxlint.
 
 ## Comandos
 
@@ -190,6 +264,18 @@ Antes de cada commit tienen que pasar sin errores:
 
 - Se construye **por etapas**. Al terminar cada etapa se avisa para que el autor la pruebe antes de seguir.
 - No se construyen fases futuras sin que se pidan.
+- **Un solo hilo de trabajo a la vez.** En Resolver se construye un motor a la vez, con las pruebas pasando, y se avisa para probarlo.
+- **Si algo falta o no se puede, se dice exactamente qué y se para.** No se inventa ni se simula.
+- **Se revisa que el contenido matemático sea correcto.**
+- **Se pide aprobación al autor antes de:**
+  - cambiar la arquitectura, o borrar o reescribir partes grandes del código;
+  - agregar una dependencia nueva (con el porqué, cuánto pesa y si tiene costo o licencia restrictiva);
+  - usar cualquier servicio externo, API o base de datos, o algo que pueda costar dinero;
+  - recolectar cualquier dato de usuarios;
+  - publicar en internet o cambiar la configuración del repositorio;
+  - reescribir el historial de git o borrar ramas;
+  - manejar claves o secretos (nunca se suben al repositorio).
+- **Este archivo se actualiza al terminar cada etapa.**
 - **Publicación pendiente.** Todavía no se publica el sitio, ni en Vercel ni en GitHub Pages, hasta que el autor lo pida. El workflow de Pages solo corre a mano.
 
 ## Fases
@@ -201,9 +287,14 @@ Antes de cada commit tienen que pasar sin errores:
    - lección de ley de signos;
    - retroalimentación sin IA;
    - progreso local.
-2. **Fase 2:**
-   - lecciones de todas las bases;
-   - pantalla para exportar e importar el progreso con un código;
-   - sección **Resolver** con los primeros motores y el árbol del porqué. Esto es una propuesta: falta confirmar en qué fase entra.
-3. **Fase 3:** simulacro cronometrado del examen de admisión de la USAC y uso sin internet (PWA).
-4. **Fase 4:** precálculo, trigonometría, álgebra lineal y cálculo.
+2. **Fase 2: Resolver (actual).** Va por etapas, y cada una se prueba antes de seguir:
+   1. **(Hecha)** Núcleo y navegación: parser → AST, evaluador exacto, despachador, tokens y FLIP, barra Resolver / Aprender y entrada del problema. Sin motores todavía: todo problema dice "todavía no sé resolverlo".
+   2. Motor de aritmética: pasos animados, recta numérica, revisar mi respuesta, practicar uno igual y las mini lecciones de sus conceptos.
+   3. Motor de ecuaciones lineales: balanza, casos sin solución o con infinitas soluciones y su mini lección.
+3. **Después de Resolver:**
+   - decimales en los motores (siguiente mejora, por el examen de la USAC);
+   - portada y pantallas de Aprender aprovechando el ancho en tablet y computadora;
+   - lecciones completas de todas las bases en Aprender;
+   - pantalla para exportar e importar el progreso con un código.
+4. **Fase 3:** simulacro cronometrado del examen de admisión de la USAC y uso sin internet (PWA).
+5. **Fase 4:** precálculo, trigonometría, álgebra lineal y cálculo.

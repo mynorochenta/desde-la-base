@@ -92,8 +92,8 @@ function Resultado({ fin, alReintentar, alPracticar }: { fin: Fin; alReintentar:
         <a className="boton" href={href(rutas.resultado)}>
           Ver tu mapa
         </a>
-        <a className="boton-texto" href={href(rutas.inicio)}>
-          Volver al inicio
+        <a className="boton-texto" href={href(rutas.aprender)}>
+          Volver a Aprender
         </a>
       </div>
     </section>
@@ -136,7 +136,7 @@ export function LeccionSignos() {
   return (
     <main className="hoja leccion">
       <div className="leccion-barra">
-        <a className="boton-texto leccion-salir" href={href(rutas.inicio)}>
+        <a className="boton-texto leccion-salir" href={href(rutas.aprender)}>
           Salir
         </a>
         <span className="leccion-nombre">Ley de signos</span>
