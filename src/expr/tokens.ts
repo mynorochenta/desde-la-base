@@ -38,6 +38,9 @@ function nivel(n: Nodo): number {
   }
 }
 
+/** 6x: un número pegado a una letra, sin signo de por medio. */
+const terminoConLetra = (n: Nodo) => n.tipo === 'producto' && n.forma === 'implicita' && n.izq.tipo === 'num' && n.der.tipo === 'var'
+
 const sim = (clave: string, tex: string, rol: RolSimbolo): Token => ({ tipo: 'simbolo', clave, tex, rol })
 
 function conParentesis(n: Nodo, poner: boolean): Token[] {
@@ -66,7 +69,8 @@ export function tokens(n: Nodo): Token[] {
         },
       ]
     case 'neg':
-      return [sim(`${n.id}:-`, '-', 'signo'), ...conParentesis(n.arg, nivel(n.arg) < 4)]
+      // −6x no necesita paréntesis: el número pegado a la letra se lee como un solo término.
+      return [sim(`${n.id}:-`, '-', 'signo'), ...conParentesis(n.arg, nivel(n.arg) < 4 && !terminoConLetra(n.arg))]
     case 'par':
       return [sim(`${n.id}:(`, '(', 'parentesis'), ...tokens(n.arg), sim(`${n.id}:)`, ')', 'parentesis')]
     case 'suma':
