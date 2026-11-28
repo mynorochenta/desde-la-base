@@ -1,14 +1,14 @@
 import { useMemo, useState } from 'react'
 import { conceptos } from '../content/concepts'
-import type { Fraction } from '../engine/fraction'
+import { minis } from '../content/mini'
 import { semillaNueva } from '../engine/rng'
-import type { Nodo } from '../expr/ast'
-import { frac, neg, num } from '../expr/construir'
+import { variables, type Nodo } from '../expr/ast'
 import { leerProblema, type Lectura } from '../expr/parse'
 import { textoDe } from '../expr/tokens'
-import { temaCercano } from '../motores/cercano'
+import { porQueNo, temaCercano } from '../motores/cercano'
 import { despachar } from '../motores/registro'
-import type { Motor, Resultado } from '../motores/tipos'
+import type { Motor } from '../motores/tipos'
+import { CajaResultado } from '../resolver/CajaResultado'
 import { HojaTema } from '../resolver/HojaTema'
 import { leerTemas } from '../resolver/temas'
 import { RevisarRespuesta } from '../resolver/RevisarRespuesta'
@@ -64,46 +64,6 @@ function PreguntaMixto({ error }: { error: Extract<Lectura, { ok: false }>['erro
 }
 
 
-/** Un valor exacto como árbol, para dibujarlo: −3/4 → neg(frac(3, 4)). */
-function nodoValor(v: Fraction, id = 'r'): Nodo {
-  const a = Math.abs(v.num)
-  const n = v.den === 1 ? num(`${id}n`, a) : frac(`${id}f`, num(`${id}n`, a), num(`${id}d`, v.den))
-  return v.num < 0 ? neg(`${id}s`, n) : n
-}
-
-/** 19/12 → "1 7/12" (solo si la fracción es mayor que 1). */
-function comoMixto(v: Fraction): string | null {
-  const a = Math.abs(v.num)
-  if (v.den === 1 || a < v.den) return null
-  return `${v.num < 0 ? '−' : ''}${Math.floor(a / v.den)} ${a % v.den}/${v.den}`
-}
-
-function CajaResultado({ resultado }: { resultado: Resultado }) {
-  if (resultado.tipo === 'no-definido') {
-    return (
-      <div className="solucion-resultado">
-        <p className="solucion-resultado-titulo">Resultado</p>
-        <p className="solucion-resultado-valor">No está definido</p>
-        <p>{resultado.explicacion} Dividir entre 0 no tiene respuesta, así que el problema no tiene resultado.</p>
-      </div>
-    )
-  }
-  if (resultado.tipo !== 'valor') return null
-  const mixto = comoMixto(resultado.valor)
-  return (
-    <div className="solucion-resultado">
-      <p className="solucion-resultado-titulo">Resultado</p>
-      <div className="solucion-resultado-valor">
-        <ExpresionAnimada frame={{ expr: nodoValor(resultado.valor) }} grande />
-      </div>
-      {mixto && <p>Como número mixto: {mixto}</p>}
-      <p className="solucion-comprobado">
-        <span aria-hidden="true">✓</span> Comprobado: calculé el resultado otra vez por otro camino y coincide.
-      </p>
-    </div>
-  )
-}
-
 /** "Practicar uno igual": la misma forma con otros números, y revisar la respuesta. */
 function PracticarIgual({ motor, problema }: { motor: Motor<unknown>; problema: unknown }) {
   const [semilla, setSemilla] = useState<number | null>(null)
@@ -135,6 +95,7 @@ function PracticarIgual({ motor, problema }: { motor: Motor<unknown>; problema: 
       </div>
       <RevisarRespuesta
         key={semilla}
+        {...formaDeRespuesta(expr)}
         revisar={(r) => motor.revisar(nuevo, r)}
         despues={() => (
           <>
@@ -149,6 +110,19 @@ function PracticarIgual({ motor, problema }: { motor: Motor<unknown>; problema: 
       />
     </div>
   )
+}
+
+/** Cómo se contesta: en una ecuación se escribe el valor de la letra, y hay botones para los casos sin número. */
+function formaDeRespuesta(expr: Nodo): { prefijo: string; atajos: { texto: string; valor: string }[] } {
+  if (expr.tipo !== 'igual') return { prefijo: '=', atajos: [{ texto: 'No está definido', valor: 'no está definido' }] }
+  const letra = variables(expr)[0] ?? 'x'
+  return {
+    prefijo: `${letra} =`,
+    atajos: [
+      { texto: 'No tiene solución', valor: 'no tiene solución' },
+      { texto: 'Infinitas soluciones', valor: 'infinitas soluciones' },
+    ],
+  }
 }
 
 type Modo = 'elegir' | 'pasos' | 'revisar'
@@ -188,6 +162,7 @@ function Resuelto({ despacho, problema }: { despacho: Extract<ReturnType<typeof 
           </h2>
           <p>Escribe lo que te dio. Si te equivocaste, busco el error más común que lleva a tu respuesta.</p>
           <RevisarRespuesta
+            {...formaDeRespuesta(motor.expresion(despacho.problema))}
             revisar={(r) => motor.revisar(despacho.problema, r)}
             alVerPaso={(i) => verPasos(i)}
             despues={() => (
@@ -215,9 +190,9 @@ function Resuelto({ despacho, problema }: { despacho: Extract<ReturnType<typeof 
         </section>
       )}
 
-      {modo === 'pasos' && (indice === pasos.length - 1 || pasos.length === 0) && <CajaResultado resultado={solucion.resultado} />}
+      {modo === 'pasos' && (indice === pasos.length - 1 || pasos.length === 0) && <CajaResultado resultado={solucion.resultado} expr={motor.expresion(despacho.problema)} />}
 
-      {modo !== 'elegir' && solucion.resultado.tipo === 'valor' && (
+      {modo !== 'elegir' && solucion.resultado.tipo !== 'no-definido' && (
         <section className="solucion-bloque" aria-labelledby="practicar-t">
           <h2 id="practicar-t" className="solucion-subtitulo">
             ¿Lo quieres practicar?
@@ -262,6 +237,7 @@ export function Solucion() {
 
   const tema = temaCercano(lectura.ast)
   const leccion = conceptos[tema].leccion
+  const razon = despacho?.estado === 'no-reconocido' ? porQueNo(lectura.ast) : null
 
   return (
     <main className="hoja hoja-ancha solucion">
@@ -287,6 +263,7 @@ export function Solucion() {
           <h2 id="no-t" className="solucion-subtitulo">
             {despacho?.estado === 'no-verificado' ? 'No pude comprobar el resultado' : 'Todavía no sé resolver este tipo de problema'}
           </h2>
+          {razon && <p className="solucion-razon">{razon}</p>}
           <p>
             {despacho?.estado === 'no-verificado'
               ? 'Lo reconocí, pero mi resultado no pasó la comprobación, así que no te lo muestro.'
@@ -294,6 +271,11 @@ export function Solucion() {
             El tema más cercano es <strong>{conceptos[tema].nombre}</strong>.
           </p>
           <div className="solucion-acciones">
+            {minis[tema] && (
+              <a className="boton boton-chico boton-secundario" href={href(rutas.resolver(problema, [tema]))}>
+                Repasar {conceptos[tema].nombre}
+              </a>
+            )}
             {leccion ? (
               <a className="boton boton-chico" href={href(rutas.leccion(leccion))}>
                 Ir a la lección

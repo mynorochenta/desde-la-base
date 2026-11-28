@@ -21,9 +21,23 @@ export type Despacho =
 
 /**
  * En una expresión sin igualdad, cada frame de cada paso tiene que valer lo
- * mismo que el resultado. Si el resultado es "no definido", no se revisa.
+ * mismo que el resultado; en una ecuación, cada frame se tiene que cumplir
+ * con la solución. Si el resultado es "no definido", no se revisa.
  */
 function conservaValor(s: Solucion): boolean {
+  const res = s.resultado
+  if (res.tipo === 'solucion') {
+    // En una ecuación, cada frame tiene que cumplirse con la solución.
+    return s.pasos.every((p) =>
+      p.frames.every((f) => {
+        if (f.expr.tipo !== 'igual') return true
+        const vars = { [res.variable]: res.valor }
+        const a = evaluar(f.expr.izq, vars)
+        const b = evaluar(f.expr.der, vars)
+        return a.ok && b.ok && a.valor.equals(b.valor)
+      }),
+    )
+  }
   if (s.resultado.tipo !== 'valor') return true
   const r = s.resultado.valor
   return s.pasos.every((p) =>

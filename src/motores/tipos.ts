@@ -23,8 +23,12 @@ export type Visual =
    * `inicio` y se da cada salto; si `voltear` es true, los saltos van al revés (una resta).
    */
   | { tipo: 'recta'; inicio: number; saltos: number[]; voltear: boolean }
-  /** Balanza: lo que hay en cada platillo. */
-  | { tipo: 'balanza'; izq: Nodo; der: Nodo }
+  /**
+   * Balanza: lo que hay en cada platillo antes del paso, y la operación que
+   * se hace en los dos lados ("− 8x"). Si no está equilibrada, se inclina
+   * (por ejemplo 0 = 5).
+   */
+  | { tipo: 'balanza'; izq: Nodo; der: Nodo; operacion?: string; equilibrada: boolean }
 
 export type Paso = {
   /** Qué se hace, corto: "Multiplica primero". */

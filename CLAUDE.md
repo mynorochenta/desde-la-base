@@ -55,10 +55,14 @@ Es para el estudiante que tiene un problema **hoy**, por ejemplo uno de la tarea
   - División entre cero: "no está definido".
   - Decimales: todavía no se aceptan. **Siguiente mejora**, porque son comunes en el examen de admisión de la USAC.
 - **Ecuaciones:** la explicación principal es "hacer lo mismo en los dos lados", con la balanza. "Pasa al otro lado con el signo contrario" solo aparece como atajo, en una nota. Los generadores de Aprender enseñan lo mismo.
+  - Orden de los pasos: quitar paréntesis y repartir fracciones, multiplicar los dos lados por el mcm para quitar fracciones, juntar términos parecidos, llevar la letra a la izquierda, llevar los números a la derecha y dividir entre el número que acompaña a la letra.
+  - Los tres casos: una solución, sin solución (queda algo como 0 = 5) e infinitas soluciones (0 = 0). Cada uno se explica en palabras y con la balanza (inclinada si nunca se cumple).
+  - La comprobación se le muestra al estudiante: el número en lugar de la letra en la ecuación original, y cuánto da cada lado. En los casos sin solución o infinitas, se prueba con dos números.
+  - Lo que no es lineal (x², x·x, x en el denominador, dos letras, x en un exponente, expresión sin =) se rechaza con su razón y se ofrece el tema más cercano.
 - **Diseño adaptable:** funciona en celular, tablet y computadora. En pantallas grandes se aprovecha el espacio (por ejemplo, los pasos y la visual lado a lado). Cada etapa se prueba en los tres tamaños.
 - **Si no lo reconoce:** lo dice con claridad y ofrece el tema más cercano en Aprender. **Nunca inventa un resultado.**
 - **Verificación antes de mostrar:** todo resultado se comprueba de forma independiente, por ejemplo sustituyendo la solución en la ecuación. Si la comprobación falla, no se muestra la solución.
-- **Primeros motores:**
+- **Motores hechos:**
   1. Aritmética: enteros, ley de signos, fracciones y jerarquía de operaciones.
   2. Ecuaciones lineales con una incógnita, con balanza visual.
 
@@ -101,15 +105,18 @@ src/
 │                     · evaluar.ts   valor exacto con Fraction
 │                     · tokens.ts    AST → tokens con clave estable, y AST → LaTeX
 │                     · construir.ts atajos para armar árboles con ids elegidos
+│                     · sustituir.ts pone un número en lugar de la letra (la comprobación que ve el estudiante)
 ├─ motores/
 │  ├─ tipos.ts      Motor, Solucion, Paso, Frame, Visual
 │  ├─ registro.ts   despachador: usa el primer motor que detecta el problema y verifica
-│  ├─ cercano.ts    tema más cercano cuando ningún motor puede
+│  ├─ cercano.ts    tema más cercano y la razón en palabras (porQueNo) cuando ningún motor puede
 │  ├─ aritmetica/   motor.ts, pasos.ts (pasos y su porqué), numeros.ts, errores.ts, parecido.ts, motor.test.ts
-│  └─ ecuacion-lineal/
+│  ├─ cambiar.ts    cambia los números de un problema y conserva su forma (practicar uno igual)
+│  └─ ecuacion-lineal/ lineal.ts (términos y por qué no es lineal), pasos.ts (balanza), errores.ts, motor.ts, motor.test.ts
 ├─ content/mini/    mini lecciones del árbol del porqué, una por concepto (index.ts las junta)
 ├─ resolver/       CampoProblema (MathLive + texto de respaldo), mathlive.ts (carga y teclado),
-│                    VisorPasos, RevisarRespuesta, HojaTema (mini lección), temas.ts (lee ?tema=)
+│                    VisorPasos, RevisarRespuesta, CajaResultado (resultado y comprobación),
+│                    HojaTema (mini lección), temas.ts (lee ?tema=)
 └─ screens/Resolver.tsx, screens/Solucion.tsx, ui/ExpresionAnimada.tsx, ui/BarraSecciones.tsx
 ```
 
@@ -289,10 +296,10 @@ Antes de cada commit tienen que pasar sin errores:
    - lección de ley de signos;
    - retroalimentación sin IA;
    - progreso local.
-2. **Fase 2: Resolver (actual).** Va por etapas, y cada una se prueba antes de seguir:
+2. **Fase 2: Resolver (hecha; falta que el autor la pruebe).** Va por etapas, y cada una se prueba antes de seguir:
    1. **(Hecha)** Núcleo y navegación: parser → AST, evaluador exacto, despachador, tokens y FLIP, barra Resolver / Aprender y entrada del problema. Sin motores todavía: todo problema dice "todavía no sé resolverlo".
    2. **(Hecha)** Motor de aritmética: pasos animados, recta numérica, revisar mi respuesta, practicar uno igual y las mini lecciones de sus conceptos.
-   3. Motor de ecuaciones lineales: balanza, casos sin solución o con infinitas soluciones y su mini lección.
+   3. **(Hecha)** Motor de ecuaciones lineales: balanza, casos sin solución o con infinitas soluciones y su mini lección.
 3. **Después de Resolver:**
    - decimales en los motores (siguiente mejora, por el examen de la USAC);
    - portada y pantallas de Aprender aprovechando el ancho en tablet y computadora;

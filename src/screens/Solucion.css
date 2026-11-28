@@ -142,3 +142,30 @@
   gap: 0.5rem;
   width: 100%;
 }
+
+.solucion-sustitucion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  border-left: 3px solid var(--tinta);
+  padding-left: 0.75rem;
+  max-width: 100%;
+}
+
+.solucion-si {
+  color: var(--verde);
+}
+
+.solucion-no {
+  color: var(--rojo);
+}
+
+.solucion-razon {
+  border-left: 4px solid var(--margen);
+  padding: 0.2rem 0 0.2rem 0.75rem;
+  max-width: 40rem;
+}
+
+.solucion-resultado h3.solucion-resultado-titulo {
+  margin-top: 0.5rem;
+}

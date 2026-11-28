@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { leerProblema } from '../../expr/parse'
-import { motor } from '../../motores/aritmetica/motor'
+import { despachar } from '../../motores/registro'
 import { texto } from '../../motores/aritmetica/numeros'
 import { conceptos, type ConceptoId } from '../concepts'
 import { generar } from '../generators'
@@ -13,8 +13,8 @@ describe('mini lecciones', () => {
     for (const [id, m] of Object.entries(minis)) expect(m.concepto).toBe(id)
   })
 
-  it('hay mini lección para cada concepto de la aritmética y sus prerrequisitos', () => {
-    const usados: ConceptoId[] = ['enteros', 'signos', 'jerarquia', 'fracciones-simplificar', 'fracciones-suma', 'fracciones-multiplicacion', 'potencias']
+  it('hay mini lección para cada concepto y sus prerrequisitos', () => {
+    const usados = Object.keys(conceptos) as ConceptoId[]
     for (const c of usados) {
       expect(minis[c]).toBeDefined()
       for (const p of conceptos[c].prerrequisitos) expect(minis[p]).toBeDefined()
@@ -28,13 +28,13 @@ describe('mini lecciones', () => {
       const l = leerProblema(problema)
       expect(l.ok).toBe(true)
       if (!l.ok) return
-      const p = motor.detectar(l.ast)
-      expect(p).not.toBeNull()
-      const s = motor.resolver(p!)
-      expect(motor.comprobar(p!, s)).toBe(true)
-      expect(s.resultado.tipo).toBe('valor')
-      if (s.resultado.tipo !== 'valor') return
-      const r = texto(s.resultado.valor)
+      const d = despachar(l.ast)
+      expect(d.estado).toBe('resuelto')
+      if (d.estado !== 'resuelto') return
+      const res = d.solucion.resultado
+      expect(res.tipo === 'valor' || res.tipo === 'solucion').toBe(true)
+      if (res.tipo !== 'valor' && res.tipo !== 'solucion') return
+      const r = texto(res.valor)
       // El resultado aparece al final de la explicación (o justo antes de un comentario).
       expect(explicacion).toMatch(new RegExp(`(^|[^0-9/])${r.replace('/', '\\/')}([^0-9/]|$)`))
     },

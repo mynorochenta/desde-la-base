@@ -10,7 +10,7 @@ describe('temas en la ruta', () => {
     expect(leerTemas('')).toEqual([])
   })
   // El parámetro es texto no confiable: solo pasan ids de conceptos con mini lección.
-  it.each(['constructor', '__proto__', 'toString', 'hasOwnProperty', '<img src=x>', 'ecuaciones-lineales', 'signos;alert(1)'])(
+  it.each(['constructor', '__proto__', 'toString', 'hasOwnProperty', '<img src=x>', 'ecuaciones', 'signos;alert(1)'])(
     'descarta %s',
     (t) => {
       expect(leerTemas(t)).toEqual([])

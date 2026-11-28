@@ -7,8 +7,6 @@ import { Teclado } from '../ui/Teclado'
 import { aplicarTecla } from '../ui/teclado-logica'
 import '../ui/Responder.css'
 
-const NO_DEFINIDO = 'no está definido'
-
 /**
  * "Revisar mi respuesta": el estudiante escribe lo que le dio y el motor lo
  * compara con el resultado y con los errores típicos. Sirve para el
@@ -18,7 +16,13 @@ export function RevisarRespuesta({
   revisar,
   alVerPaso,
   despues,
+  prefijo = '=',
+  atajos = [],
 }: {
+  /** Lo que va antes del campo: "=" o "x =". */
+  prefijo?: string
+  /** Respuestas sin número, como "No está definido" o "No tiene solución". */
+  atajos?: { texto: string; valor: string }[]
   revisar: (respuesta: string) => Revision
   /** Si se sabe en qué paso estuvo el error, se ofrece ir a ese paso. */
   alVerPaso?: (i: number) => void
@@ -66,7 +70,7 @@ export function RevisarRespuesta({
           Tu respuesta
         </label>
         <span className="resp-igual" aria-hidden="true">
-          =
+          {prefijo}
         </span>
         <input
           id={`${id}-r`}
@@ -130,16 +134,19 @@ export function RevisarRespuesta({
             <button type="button" className="boton" onClick={() => enviar()}>
               Revisar
             </button>
-            <button
-              type="button"
-              className="boton boton-chico boton-secundario"
-              onClick={() => {
-                setEntrada(NO_DEFINIDO)
-                enviar(NO_DEFINIDO)
-              }}
-            >
-              No está definido
-            </button>
+            {atajos.map((a) => (
+              <button
+                key={a.valor}
+                type="button"
+                className="boton boton-chico boton-secundario"
+                onClick={() => {
+                  setEntrada(a.valor)
+                  enviar(a.valor)
+                }}
+              >
+                {a.texto}
+              </button>
+            ))}
           </div>
         </>
       )}

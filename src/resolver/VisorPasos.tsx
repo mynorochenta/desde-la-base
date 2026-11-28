@@ -3,6 +3,7 @@ import { conceptos } from '../content/concepts'
 import { final, rangoPara, type Saltos } from '../lessons/ley-de-signos/saltos'
 import type { Paso, Visual } from '../motores/tipos'
 import { href, rutas } from '../router'
+import { Balanza } from '../ui/Balanza'
 import { ExpresionAnimada } from '../ui/ExpresionAnimada'
 import { dur } from '../ui/movimiento'
 import { usePrefersReducedMotion } from '../ui/useReducedMotion'
@@ -23,7 +24,14 @@ function describirRecta(m: Saltos): string {
 }
 
 function Dibujo({ visual, repetir }: { visual: Visual; repetir: number }) {
-  if (visual.tipo !== 'recta') return null
+  if (visual.tipo === 'balanza') {
+    return (
+      <div className="pasos-visual">
+        <p className="pasos-visual-titulo">En la balanza</p>
+        <Balanza key={repetir} izq={visual.izq} der={visual.der} operacion={visual.operacion} equilibrada={visual.equilibrada} />
+      </div>
+    )
+  }
   const modelo: Saltos = { inicio: visual.inicio, saltos: visual.saltos, voltear: visual.voltear }
   return (
     <div className="pasos-visual">

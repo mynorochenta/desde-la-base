@@ -33,7 +33,7 @@ const bien = (a: Nodo): Solucion => ({
 
 describe('despachar', () => {
   it('el registro encuentra el motor de aritmética', () => {
-    expect(motores.map((m) => m.id)).toEqual(['aritmetica'])
+    expect(motores.map((m) => m.id)).toEqual(['aritmetica', 'ecuacion-lineal'])
     expect(despachar(ast('2 + 3')).estado).toBe('resuelto')
     expect(despachar(ast('2x + 1')).estado).toBe('no-reconocido')
   })
