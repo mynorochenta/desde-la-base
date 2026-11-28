@@ -10,7 +10,8 @@ import { porQueNo, temaCercano } from '../cercano'
 import { despachar } from '../registro'
 import type { Resultado } from '../tipos'
 import { comprobarEcuacion, detectarEcuacion, motor, type ProblemaEcuacion } from './motor'
-import { resolverEcuacion, sustituir } from './pasos'
+import { sustituir } from '../../expr/sustituir'
+import { resolverEcuacion } from './pasos'
 
 const ast = (s: string): Nodo => {
   const r = leerProblema(s)
