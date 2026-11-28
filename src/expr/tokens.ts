@@ -77,7 +77,8 @@ export function tokens(n: Nodo): Token[] {
         ...conParentesis(n.der, negSuelto(n.der) || nivel(n.der) < (n.tipo === 'resta' ? 2 : 1)),
       ]
     case 'producto': {
-      const izq = conParentesis(n.izq, nivel(n.izq) < 2)
+      // (−3) · (−3): el negativo de la izquierda también lleva paréntesis.
+      const izq = conParentesis(n.izq, nivel(n.izq) < 2 || (n.izq.tipo === 'neg' && n.forma !== 'implicita'))
       const der = conParentesis(n.der, negSuelto(n.der) || nivel(n.der) < 2)
       if (n.forma === 'implicita') return [...izq, ...der]
       return [...izq, sim(`${n.id}:op`, n.forma === 'cruz' ? '\\times' : '\\cdot', 'operador'), ...der]
@@ -131,9 +132,16 @@ export function textoDe(n: Nodo): string {
         const m: Record<string, string> = { '\\cdot': ' · ', '\\times': ' × ', '\\div': ' ÷ ', '+': ' + ', '=': ' = ' }
         if (t.rol === 'operador') return m[t.tex] ?? ` ${t.tex === '-' ? '−' : t.tex} `
         if (t.rol === 'signo') return '−'
+        if (t.rol === 'entero-mixto') return `${t.tex} `
         return t.tex
       })
       .join('')
-  const envuelve = (ts: Token[]) => (ts.length === 1 && ts[0].tipo === 'simbolo' ? ts[0].tex : `(${plano(ts)})`)
+  const envuelve = (ts: Token[]) => {
+    if (ts.length === 1 && ts[0].tipo === 'simbolo') return ts[0].tex
+    const primero = ts[0]
+    const ultimo = ts[ts.length - 1]
+    const yaTiene = primero.tipo === 'simbolo' && primero.tex === '(' && ultimo.tipo === 'simbolo' && ultimo.tex === ')'
+    return yaTiene ? plano(ts) : `(${plano(ts)})`
+  }
   return plano(tokens(n)).replace(/\s+/g, ' ').trim()
 }

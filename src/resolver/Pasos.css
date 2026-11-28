@@ -1,0 +1,204 @@
+.pasos {
+  display: grid;
+  gap: var(--cuadro);
+  width: 100%;
+}
+
+.pasos-principal {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.pasos-cuenta {
+  font-size: var(--t-1);
+  color: var(--texto-suave);
+}
+
+.pasos-titulo {
+  font-family: var(--mano);
+  font-size: var(--t2);
+  color: var(--tinta);
+}
+
+.pasos-expresion {
+  max-width: 100%;
+  min-height: 4.5rem;
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  padding: 0.25rem 0;
+}
+
+.pasos-explicacion {
+  font-size: var(--t1);
+  line-height: 1.45;
+  max-width: 38rem;
+}
+
+.pasos-nota {
+  border-left: 4px solid var(--resaltador);
+  padding: 0.2rem 0 0.2rem 0.75rem;
+  max-width: 38rem;
+}
+
+.pasos-temas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.6rem;
+}
+
+.pasos-temas-titulo {
+  font-size: var(--t-1);
+  color: var(--texto-suave);
+}
+
+.pasos-temas ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+/* Botón de tema: como una etiqueta escrita con pluma azul. */
+.pasos-tema {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: 0.3rem 0.8rem;
+  border: 1.5px solid var(--tinta);
+  border-radius: 1.2rem 0.9rem 1.1rem 0.8rem;
+  background: #fff;
+  color: var(--tinta);
+  font-size: var(--t-1);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.pasos-tema:hover {
+  background: var(--resaltador);
+}
+
+.pasos-visual {
+  min-width: 0;
+}
+
+.pasos-visual-titulo {
+  font-family: var(--mano);
+  color: var(--texto-suave);
+}
+
+.pasos-botones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1rem;
+}
+
+.pasos-botones .boton:disabled {
+  opacity: 0.45;
+  cursor: default;
+  box-shadow: none;
+}
+
+.pasos-lista summary {
+  cursor: pointer;
+  color: var(--tinta);
+  font-weight: 700;
+  min-height: 2.75rem;
+  display: flex;
+  align-items: center;
+}
+
+.pasos-lista-ol {
+  margin: 0.5rem 0 0;
+  padding-left: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.pasos-lista-titulo {
+  background: none;
+  border: none;
+  padding: 0.2rem 0;
+  font: inherit;
+  color: var(--tinta);
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.revisar-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1.25rem;
+  margin-top: 0.5rem;
+}
+
+.pasos-lista-ol li {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+}
+
+.pasos-lista-actual .pasos-lista-titulo {
+  font-weight: 700;
+  background: var(--resaltador);
+  text-decoration: none;
+}
+
+.pasos-lado {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cuadro);
+  min-width: 0;
+}
+
+/* En el teléfono, la lista va aparte (ListaPasos, plegada). */
+.pasos-mapa {
+  display: none;
+}
+
+/* En pantallas grandes, el paso a la izquierda y el dibujo y la lista a la derecha. */
+@media (min-width: 64rem) {
+  .pasos {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    grid-template-areas: 'paso lado' 'botones lado';
+    grid-template-rows: auto 1fr;
+    align-items: start;
+    column-gap: calc(var(--cuadro) * 2);
+  }
+
+  .pasos-principal {
+    grid-area: paso;
+  }
+
+  .pasos-lado {
+    grid-area: lado;
+    border-left: 2px solid var(--cuadricula);
+    padding-left: calc(var(--cuadro) * 1.5);
+  }
+
+  .pasos-botones {
+    grid-area: botones;
+  }
+
+  .pasos-mapa {
+    display: block;
+    max-height: 26rem;
+    overflow-y: auto;
+  }
+
+  .pasos-lista {
+    display: none;
+  }
+}

@@ -1,8 +1,18 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { conceptos } from '../content/concepts'
+import type { Fraction } from '../engine/fraction'
+import { semillaNueva } from '../engine/rng'
+import type { Nodo } from '../expr/ast'
+import { frac, neg, num } from '../expr/construir'
 import { leerProblema, type Lectura } from '../expr/parse'
+import { textoDe } from '../expr/tokens'
 import { temaCercano } from '../motores/cercano'
 import { despachar } from '../motores/registro'
+import type { Motor, Resultado } from '../motores/tipos'
+import { HojaTema } from '../resolver/HojaTema'
+import { leerTemas } from '../resolver/temas'
+import { RevisarRespuesta } from '../resolver/RevisarRespuesta'
+import { ListaPasos, VisorPasos } from '../resolver/VisorPasos'
 import { href, rutas, useUbicacion } from '../router'
 import { ExpresionAnimada } from '../ui/ExpresionAnimada'
 import './Solucion.css'
@@ -53,8 +63,176 @@ function PreguntaMixto({ error }: { error: Extract<Lectura, { ok: false }>['erro
   )
 }
 
+
+/** Un valor exacto como árbol, para dibujarlo: −3/4 → neg(frac(3, 4)). */
+function nodoValor(v: Fraction, id = 'r'): Nodo {
+  const a = Math.abs(v.num)
+  const n = v.den === 1 ? num(`${id}n`, a) : frac(`${id}f`, num(`${id}n`, a), num(`${id}d`, v.den))
+  return v.num < 0 ? neg(`${id}s`, n) : n
+}
+
+/** 19/12 → "1 7/12" (solo si la fracción es mayor que 1). */
+function comoMixto(v: Fraction): string | null {
+  const a = Math.abs(v.num)
+  if (v.den === 1 || a < v.den) return null
+  return `${v.num < 0 ? '−' : ''}${Math.floor(a / v.den)} ${a % v.den}/${v.den}`
+}
+
+function CajaResultado({ resultado }: { resultado: Resultado }) {
+  if (resultado.tipo === 'no-definido') {
+    return (
+      <div className="solucion-resultado">
+        <p className="solucion-resultado-titulo">Resultado</p>
+        <p className="solucion-resultado-valor">No está definido</p>
+        <p>{resultado.explicacion} Dividir entre 0 no tiene respuesta, así que el problema no tiene resultado.</p>
+      </div>
+    )
+  }
+  if (resultado.tipo !== 'valor') return null
+  const mixto = comoMixto(resultado.valor)
+  return (
+    <div className="solucion-resultado">
+      <p className="solucion-resultado-titulo">Resultado</p>
+      <div className="solucion-resultado-valor">
+        <ExpresionAnimada frame={{ expr: nodoValor(resultado.valor) }} grande />
+      </div>
+      {mixto && <p>Como número mixto: {mixto}</p>}
+      <p className="solucion-comprobado">
+        <span aria-hidden="true">✓</span> Comprobado: calculé el resultado otra vez por otro camino y coincide.
+      </p>
+    </div>
+  )
+}
+
+/** "Practicar uno igual": la misma forma con otros números, y revisar la respuesta. */
+function PracticarIgual({ motor, problema }: { motor: Motor<unknown>; problema: unknown }) {
+  const [semilla, setSemilla] = useState<number | null>(null)
+  const nuevo = useMemo(() => (semilla === null ? null : motor.parecido(problema, semilla)), [motor, problema, semilla])
+
+  if (semilla === null) {
+    return (
+      <button type="button" className="boton" onClick={() => setSemilla(semillaNueva())}>
+        Practicar uno igual
+      </button>
+    )
+  }
+  if (!nuevo) {
+    return (
+      <div className="solucion-bloque">
+        <p>No encontré uno parecido con números sencillos.</p>
+        <button type="button" className="boton-texto" onClick={() => setSemilla(semillaNueva())}>
+          Intentar otra vez
+        </button>
+      </div>
+    )
+  }
+  const expr = motor.expresion(nuevo)
+  return (
+    <div className="solucion-practica">
+      <p>Misma forma, otros números. Resuélvelo en tu cuaderno y escribe lo que te dio:</p>
+      <div className="solucion-problema">
+        <ExpresionAnimada frame={{ expr }} grande />
+      </div>
+      <RevisarRespuesta
+        key={semilla}
+        revisar={(r) => motor.revisar(nuevo, r)}
+        despues={() => (
+          <>
+            <button type="button" className="boton boton-chico" onClick={() => setSemilla(semillaNueva())}>
+              Otro
+            </button>
+            <a className="boton-texto" href={href(rutas.resolver(textoDe(expr)))}>
+              Ver cómo se resuelve
+            </a>
+          </>
+        )}
+      />
+    </div>
+  )
+}
+
+type Modo = 'elegir' | 'pasos' | 'revisar'
+
+function Resuelto({ despacho, problema }: { despacho: Extract<ReturnType<typeof despachar>, { estado: 'resuelto' }>; problema: string }) {
+  const { solucion, motor } = despacho
+  const [modo, setModo] = useState<Modo>('elegir')
+  const [indice, setIndice] = useState(0)
+  const pasos = solucion.pasos
+  const verPasos = (i = 0) => {
+    setIndice(i)
+    setModo('pasos')
+  }
+
+  return (
+    <>
+      {modo === 'elegir' && (
+        <section className="solucion-bloque" aria-labelledby="elegir-t">
+          <h2 id="elegir-t" className="solucion-subtitulo">
+            Ya lo resolví. ¿Qué quieres hacer?
+          </h2>
+          <div className="solucion-elegir">
+            <button type="button" className="boton" onClick={() => verPasos(0)}>
+              Ver la solución paso a paso
+            </button>
+            <button type="button" className="boton boton-secundario" onClick={() => setModo('revisar')}>
+              Ya lo hice: revisar mi respuesta
+            </button>
+          </div>
+        </section>
+      )}
+
+      {modo === 'revisar' && (
+        <section className="solucion-bloque" aria-labelledby="revisar-t">
+          <h2 id="revisar-t" className="solucion-subtitulo">
+            Revisar mi respuesta
+          </h2>
+          <p>Escribe lo que te dio. Si te equivocaste, busco el error más común que lleva a tu respuesta.</p>
+          <RevisarRespuesta
+            revisar={(r) => motor.revisar(despacho.problema, r)}
+            alVerPaso={(i) => verPasos(i)}
+            despues={() => (
+              <button type="button" className="boton-texto" onClick={() => verPasos(0)}>
+                Ver la solución paso a paso
+              </button>
+            )}
+          />
+        </section>
+      )}
+
+      {modo === 'pasos' && (
+        <section className="solucion-bloque solucion-pasos" aria-labelledby="pasos-t">
+          <h2 id="pasos-t" className="solucion-subtitulo">
+            Paso a paso
+          </h2>
+          {pasos.length > 0 ? (
+            <>
+              <VisorPasos pasos={pasos} problema={problema} indice={indice} alCambiar={setIndice} />
+              <ListaPasos pasos={pasos} alElegir={setIndice} />
+            </>
+          ) : (
+            <p>Ya está en su forma más simple: no hay nada que calcular.</p>
+          )}
+        </section>
+      )}
+
+      {modo === 'pasos' && (indice === pasos.length - 1 || pasos.length === 0) && <CajaResultado resultado={solucion.resultado} />}
+
+      {modo !== 'elegir' && solucion.resultado.tipo === 'valor' && (
+        <section className="solucion-bloque" aria-labelledby="practicar-t">
+          <h2 id="practicar-t" className="solucion-subtitulo">
+            ¿Lo quieres practicar?
+          </h2>
+          <PracticarIgual motor={motor} problema={despacho.problema} />
+        </section>
+      )}
+    </>
+  )
+}
+
 export function Solucion() {
-  const problema = useUbicacion().params.get('p') ?? ''
+  const params = useUbicacion().params
+  const problema = params.get('p') ?? ''
+  const temas = leerTemas(params.get('tema'))
   const lectura = useMemo(() => leerProblema(problema), [problema])
   const despacho = useMemo(() => (lectura.ok ? despachar(lectura.ast) : null), [lectura])
 
@@ -103,20 +281,7 @@ export function Solucion() {
       </section>
 
       {despacho?.estado === 'resuelto' ? (
-        <section className="solucion-bloque" aria-labelledby="pasos-t">
-          <h2 id="pasos-t" className="solucion-subtitulo">
-            Paso a paso
-          </h2>
-          <ol className="solucion-pasos">
-            {despacho.solucion.pasos.map((p, i) => (
-              <li key={i}>
-                <strong>{p.titulo}</strong>
-                <p>{p.explicacion}</p>
-                <ExpresionAnimada frame={p.frames[p.frames.length - 1]} />
-              </li>
-            ))}
-          </ol>
-        </section>
+        <Resuelto key={problema} despacho={despacho} problema={problema} />
       ) : (
         <section className="solucion-bloque" aria-labelledby="no-t">
           <h2 id="no-t" className="solucion-subtitulo">
@@ -144,6 +309,7 @@ export function Solucion() {
           </div>
         </section>
       )}
+      {temas.length > 0 && <HojaTema problema={problema} temas={temas} />}
     </main>
   )
 }

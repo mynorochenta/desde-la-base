@@ -32,9 +32,10 @@ const bien = (a: Nodo): Solucion => ({
 })
 
 describe('despachar', () => {
-  it('todavía no hay motores registrados en la etapa 1', () => {
-    expect(motores).toEqual([])
-    expect(despachar(ast('2 + 3')).estado).toBe('no-reconocido')
+  it('el registro encuentra el motor de aritmética', () => {
+    expect(motores.map((m) => m.id)).toEqual(['aritmetica'])
+    expect(despachar(ast('2 + 3')).estado).toBe('resuelto')
+    expect(despachar(ast('2x + 1')).estado).toBe('no-reconocido')
   })
 
   it('usa el primer motor en orden de prioridad', () => {

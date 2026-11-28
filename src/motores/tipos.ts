@@ -18,8 +18,11 @@ export type Frame = {
 
 /** Dibujo opcional de un paso. */
 export type Visual =
-  /** Recta numérica: se parte de `desde` y se da un salto por cada número de `saltos`. */
-  | { tipo: 'recta'; desde: Fraction; saltos: Fraction[] }
+  /**
+   * Recta numérica (el mismo modelo de la lección de signos): se parte de
+   * `inicio` y se da cada salto; si `voltear` es true, los saltos van al revés (una resta).
+   */
+  | { tipo: 'recta'; inicio: number; saltos: number[]; voltear: boolean }
   /** Balanza: lo que hay en cada platillo. */
   | { tipo: 'balanza'; izq: Nodo; der: Nodo }
 
@@ -32,6 +35,8 @@ export type Paso = {
   nota?: string
   /** Normalmente dos: antes y después. */
   frames: Frame[]
+  /** Qué regla usa el paso; "Revisar mi respuesta" la usa para señalar dónde estuvo el error. */
+  regla?: string
   /** Botones del árbol del porqué. */
   conceptos: ConceptoId[]
   visual?: Visual
@@ -65,8 +70,8 @@ export type Motor<P> = {
   comprobar(p: P, s: Solucion): boolean
   /** "Revisar mi respuesta": `respuesta` es lo que escribió el estudiante. */
   revisar(p: P, respuesta: string): Revision
-  /** "Practicar uno igual": misma forma, otros números. */
-  parecido(p: P, semilla: number): P
+  /** "Practicar uno igual": misma forma, otros números. null si no encontró uno sencillo. */
+  parecido(p: P, semilla: number): P | null
   /** El AST de un problema, para mostrarlo y para "practicar uno igual". */
   expresion(p: P): Nodo
 }

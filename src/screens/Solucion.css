@@ -87,7 +87,58 @@
   .solucion {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: calc(var(--cuadro) * 3);
+    gap: calc(var(--cuadro) * 2) calc(var(--cuadro) * 3);
     align-items: start;
   }
+
+  /* El paso a paso usa todo el ancho: el paso y su dibujo van lado a lado. */
+  .solucion-pasos {
+    grid-column: 1 / -1;
+  }
+}
+
+.solucion-elegir {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+}
+
+.solucion-resultado {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--tinta);
+  border-radius: 0.5rem 0.8rem 0.6rem 0.9rem;
+  background: #fff;
+  max-width: 100%;
+}
+
+.solucion-resultado-titulo {
+  font-family: var(--mano);
+  font-size: var(--t1);
+  color: var(--texto-suave);
+}
+
+.solucion-resultado-valor {
+  font-family: var(--mano);
+  font-size: var(--t3);
+  color: var(--tinta);
+  background: var(--resaltador);
+  padding: 0 0.4rem;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.solucion-comprobado {
+  color: var(--verde);
+  font-size: var(--t-1);
+}
+
+.solucion-practica {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
 }

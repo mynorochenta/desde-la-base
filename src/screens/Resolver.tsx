@@ -5,7 +5,7 @@ import { CampoProblema } from '../resolver/CampoProblema'
 import './Resolver.css'
 
 /** Ejemplos para tocar. Se escriben como el parser los lee. */
-const EJEMPLOS = ['3/4 + 5/6', '-2 · (4 - 7)', '2 + 3 · 4', '2x - 1 = 8x + 11']
+const EJEMPLOS = ['3/4 + 5/6', '-2 · (4 - 7)', '2 + 3 · 4', '1/2 ÷ 3/4', '-3^2 + (-2)^3']
 
 /** Pantalla principal: escribir el problema. */
 export function Resolver() {
@@ -46,8 +46,8 @@ export function Resolver() {
           })}
         </ul>
         <p className="resolver-nota">
-          Esta sección está en construcción: todavía no resuelve problemas, pero ya puedes probar cómo escribirlos. Todo pasa
-          en tu dispositivo, sin enviar nada.
+          Por ahora resuelvo operaciones con enteros, signos, fracciones, potencias y el orden de las operaciones. Las
+          ecuaciones vienen pronto. Todo pasa en tu dispositivo, sin enviar nada.
         </p>
       </aside>
     </main>
